@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace utilisateur{% endblock %}
+
+{% block body %}
+    <h1>Bienvenue {{ app.user.name }} !</h1>
+
+    <p>Choisissez votre rôle :</p>
+    
+    <form id="role-form">
+        <label>
+            <input type="radio" name="role" value="passager" checked> Passager
+        </label>
+        <label>
+            <input type="radio" name="role" value="chauffeur"> Chauffeur
+        </label>
+        <label>
+            <input type="radio" name="role" value="chauffeur-passager"> Chauffeur-Passager
+        </label>
+    </form>
+
+
+
+    <div id="vehicle-form" style="display: none;">
+        <h3>Informations du véhicule</h3>
+        {{ form_start(form) }}
+            {{ form_row(form.licensePlate) }}
+            {{ form_row(form.brand) }}
+            {{ form_row(form.model) }}
+            {{ form_row(form.energy) }}
+            {{ form_row(form.dateFirstUse) }}
+            {{ form_row(form.color) }}
+            {{ form_row(form.seatscount) }}
+
+            {# <button type="submit">Enregistrer</button> #}
+            <h3>préférences</h3>
+
+            <div>
+                {{ form_row(form.preferences) }}
+            </div>
+
+            {# <h3>Ajoutez vos propres préférences :</h3>
+            <div id="custom-preferences-list">
+                {{ form_widget(form.customPreferences) }}
+            </div>
+
+            <button type="button" id="add-preference">Ajouter une préférence</button> #}
+        {{ form_end(form) }}
+    </div>
+
+    <script>
+        document.querySelectorAll('input[name="role"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                document.getElementById('vehicle-form').style.display = 
+                    (this.value === 'chauffeur' || this.value === 'chauffeur-passager') ? 'block' : 'none';
+            });
+        });
+        document.getElementById('add-preference').addEventListener('click', function () {
+            let container = document.getElementById('custom-preferences-list');
+            let index = container.children.length;
+            
+            let newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.name = 'vehicle[customPreferences][' + index + ']';
+            newInput.classList.add('custom-preference');
+            
+            container.appendChild(newInput);
+        });
+    </script>
+{% endblock %}
+
+    

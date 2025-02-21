@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Covoiturage{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+</head>
+<body>
+    
+    {% extends 'base.html.twig' %}
+
+    {% block title %}Inscription{% endblock %}
+    
+    {% block body %}
+        <h1>Inscription</h1>
+        {# {{ form_start(registrationForm) }}
+            {{ form_row(registrationForm.email) }}
+            {{ form_row(registrationForm.name) }}
+            {{ form_row(registrationForm.plainPassword.first) }}
+            {{ form_row(registrationForm.plainPassword.second) }}
+         <button type="submit">S'inscrire</button> 
+        {{ form_end(registrationForm) }} #}
+    {% endblock %}
+    
+
+</body>
+</html>
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace utilisateur{% endblock %}
+
+{% block body %}
+    <h1>Bienvenue {{ app.user.name }} !</h1>
+    
+    <p>Choisissez votre rôle :</p>
+    
+    <form id="role-form">
+        <label>
+            <input type="radio" name="role" value="passager" checked> Passager
+        </label>
+        <label>
+            <input type="radio" name="role" value="chauffeur"> Chauffeur
+        </label>
+        <label>
+            <input type="radio" name="role" value="chauffeur-passager"> Chauffeur-Passager
+        </label>
+    </form>
+
+    <div id="vehicle-form" style="display: none;">
+        <h3>Informations du véhicule</h3>
+        <form id="vehicle-info">
+            <label>Immatriculation :</label>
+            <input type="text" name="immatriculation">
+
+            <label>Marque :</label>
+            <input type="text" name="marque">
+
+            <label>Modèle :</label>
+            <input type="text" name="modèle">
+
+            <label>Date Mise en circulation :</label>
+            <input type="date" name="datemisecirculation">
+
+            <label>Couleur :</label>
+            <input type="text" name="couleur">
+
+            <label>Nombre de places :</label>
+            <input type="integer" name="place">
+
+            <label>Energie :</label>
+            <select name="energie">
+                <option value="Electrique">Électrique</option>
+                <option value="Hybride">Hybride</option>
+                <option value="Essence">Essence</option>
+                <option value="Gasoil">Gasoil</option>
+                <option value="Gaz">Gaz</option>
+                <option value="Hydrogène">Hydrogène</option>
+            </select>
+
+            <button type="submit">Enregistrer</button>
+        </form>
+    </div>
+
+    <script>
+        document.querySelectorAll('input[name="role"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                document.getElementById('vehicle-form').style.display = 
+                    (this.value === 'chauffeur' || this.value === 'chauffeur-passager') ? 'block' : 'none';
+            });
+        });
+
+       
+    </script>
+{% endblock %}

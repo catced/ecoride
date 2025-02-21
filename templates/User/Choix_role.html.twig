@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Choix du rôle{% endblock %}
+
+{% block body %}
+    <h2>Définissez votre rôle</h2>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">Valider</button>
+    {{ form_end(form) }}
+
+
+{% endblock %}

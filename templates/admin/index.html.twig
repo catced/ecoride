@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block body %}
+    <h1>Tableau de bord de l'administrateur</h1>
+    <ul>
+        <li><a href="{{ path('admin_membres') }}">Gérer les membres</a></li>
+        <li><a href="{{ path('admin_bateaux') }}">Gérer les bateaux</a></li>
+        <li><a href="{{ path('admin_activites') }}">Gérer les activités</a></li>
+    </ul>
+{% endblock %}

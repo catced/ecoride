@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Covoiturage{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+</head>
+<body>
+    
+    {% extends 'base.html.twig' %}
+
+    {% block title %}Profil de {{ app.user.username }}{% endblock %}
+
+    {% block body %}
+        <h1>Profil de {{ app.user.username }}</h1>
+        <p>Email : {{ app.user.email }}</p>
+        <h2>Mes trajets</h2>
+        <ul>
+            {% for ride in app.user.rides %}
+                <li><a href="{{ path('ride_details', { id: ride.id }) }}">{{ ride.departure }} ? {{ ride.destination }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endblock %}
+
+    
+
+</body>
+</html>

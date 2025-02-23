@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Repository\RideRepository;
 
 #[ORM\Entity()]
 class Ride
@@ -21,9 +23,22 @@ class Ride
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $departureTime = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'rides')]
+    #[ORM\Column(type: 'float')]
+    #[Assert\NotBlank]
+    #[Assert\Positive]
+    private float $price;
+
+    #[ORM\Column(type: 'integer')]
+    #[Assert\NotBlank]
+    private int $duration;
+
+    #[ORM\ManyToOne(targetEntity: Vehicle::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private Vehicle $vehicle;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $driver;
 
     public function getId(): ?int
     {
@@ -63,14 +78,12 @@ class Ride
         return $this;
     }
 
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
-        return $this;
-    }
+    public function getPrice(): float { return $this->price; }
+    public function setPrice(float $price): self { $this->price = $price; return $this; }
+    public function getDuration(): int { return $this->duration; }
+    public function setDuration(int $duration): self { $this->duration = $duration; return $this; }
+    public function getVehicle(): Vehicle { return $this->vehicle; }
+    public function setVehicle(Vehicle $vehicle): self { $this->vehicle = $vehicle; return $this; }
+    public function getDriver(): User { return $this->driver; }
+    public function setDriver(User $driver): self { $this->driver = $driver; return $this; }
 }

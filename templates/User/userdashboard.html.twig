@@ -19,33 +19,69 @@
         </label>
     </form>
 
+    <h1>Tableau de bord</h1>
 
+    {# <h2>Ajouter un véhicule</h2>
+    {{ form_start(vehicleForm) }} 
+        {{ form_widget(vehicleForm) }}
+        <button type="submit">Enregistrer le véhicule</button>
+    {{ form_end(vehicleForm) }} #}
+
+    {# <h2>Proposer un trajet</h2>
+    {{ form_start(rideForm) }}
+        {{ form_widget(rideForm) }}
+        <button type="submit">Proposer le trajet</button>
+    {{ form_end(rideForm) }} #}
+
+    {# <h2>Vos véhicules</h2>
+    {% if vehicles is not defined or vehicles is empty %}
+        <p>Vous n'avez pas encore enregistré de véhicule.</p>
+    {% else %}
+        <ul>
+            {% for vehicle in vehicles %}
+                <li>{{ vehicle.brand }} - {{ vehicle.licensePlate }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if app.user and rideForm is defined %}
+    <h3>Proposer un voyage</h3>
+    {{ form_start(rideForm) }}
+        {{ form_row(rideForm.departure) }}
+        {{ form_row(rideForm.destination) }}
+        {{ form_row(rideForm.departureTime) }}
+        {{ form_row(rideForm.price) }}
+        {{ form_row(rideForm.duration) }}
+        {{ form_row(rideForm.vehicle) }}
+        <button type="submit">Proposer </button> 
+    {{ form_end(rideForm) }} 
+    {% endif %} #}
 
     <div id="vehicle-form" style="display: none;">
         <h3>Informations du véhicule</h3>
-        {{ form_start(form) }}
-            {{ form_row(form.licensePlate) }}
-            {{ form_row(form.brand) }}
-            {{ form_row(form.model) }}
-            {{ form_row(form.energy) }}
-            {{ form_row(form.dateFirstUse) }}
-            {{ form_row(form.color) }}
-            {{ form_row(form.seatscount) }}
+        {{ form_start(vehicleForm) }}
+            {{ form_row(vehicleForm.licensePlate) }} 
+            {{ form_row(vehicleForm.brand) }}
+            {{ form_row(vehicleForm.model) }}
+            {{ form_row(vehicleForm.energy) }}
+            {{ form_row(vehicleForm.dateFirstUse) }}
+            {{ form_row(vehicleForm.color) }}
+            {{ form_row(vehicleForm.seatscount) }}
 
             {# <button type="submit">Enregistrer</button> #}
-            <h3>préférences</h3>
+        <h3>Préférences</h3>
 
-            <div>
-                {{ form_row(form.preferences) }}
-            </div>
+        <div>
+            {{ form_row(vehicleForm.preferences) }}
+        </div>
 
-            {# <h3>Ajoutez vos propres préférences :</h3>
+            {# <h3>Ajoutez vos propres prÃ©fÃ©rences :</h3>
             <div id="custom-preferences-list">
                 {{ form_widget(form.customPreferences) }}
             </div>
 
-            <button type="button" id="add-preference">Ajouter une préférence</button> #}
-        {{ form_end(form) }}
+            <button type="button" id="add-preference">Ajouter une prÃ©fÃ©rence</button> #}
+        {{ form_end(vehicleForm) }}
     </div>
 
     <script>

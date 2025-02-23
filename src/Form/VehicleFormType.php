@@ -29,9 +29,9 @@ class VehicleFormType extends AbstractType
     ->add('brand', TextType::class, ['label' => 'Marque'])
     ->add('seatscount', IntegerType::class, ['label' => 'Nombre de places disponibles'])
     ->add('energy', ChoiceType::class, [
-        'label' => 'Type d?énergie',
+        'label' => 'Type d\'énergie',
         'choices' => [
-            'Électrique' => 'Electrique',
+            'Electrique' => 'Electrique',
             'Hybride' => 'Hybride',
             'Essence' => 'Essence',
             'Gasoil' => 'Gasoil',
@@ -44,7 +44,7 @@ class VehicleFormType extends AbstractType
         'choices' => [
             'Fumeur' => 'fumeur',
             'Non-fumeur' => 'non_fumeur',
-            'Animaux acceptés' => 'animaux_acceptes',
+            'Animaux acceptés' => 'animaux_acceptés',
             'Pas d\'animaux' => 'pas_animaux',
         ],
             'expanded' => true,
@@ -55,7 +55,7 @@ class VehicleFormType extends AbstractType
     //     'entry_type' => TextType::class,
     //     'allow_add' => true,
     //     'allow_delete' => true,
-    //     'label' =>'Ajouter vos propres préférences',
+    //     'label' =>'Ajouter vos propres prÃ©fÃ©rences',
     //     'mapped' => false,
     //     'entry_options' =>['attr'=>['class' => 'custom-preference']]
     // ])

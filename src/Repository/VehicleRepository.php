@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Vehicle;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,4 +41,14 @@ class VehicleRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+
+    public function findByOwner(User $user): array
+{
+    return $this->createQueryBuilder('v')
+        ->where('v.owner = :user')
+        ->setParameter('user', $user)
+        ->getQuery()
+        ->getResult();
+}
 }

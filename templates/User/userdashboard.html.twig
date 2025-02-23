@@ -33,18 +33,18 @@
         <button type="submit">Proposer le trajet</button>
     {{ form_end(rideForm) }} #}
 
-    {# <h2>Vos véhicules</h2>
+    <h2>Vos véhicules</h2>
     {% if vehicles is not defined or vehicles is empty %}
         <p>Vous n'avez pas encore enregistré de véhicule.</p>
     {% else %}
         <ul>
             {% for vehicle in vehicles %}
-                <li>{{ vehicle.brand }} - {{ vehicle.licensePlate }}</li>
+                <li>{{ vehicle.brand }} - {{ vehicle.model }}</li>
             {% endfor %}
         </ul>
-    {% endif %}
+    {% endif %} 
 
-    {% if app.user and rideForm is defined %}
+    {#{% if app.user and rideForm is defined %}
     <h3>Proposer un voyage</h3>
     {{ form_start(rideForm) }}
         {{ form_row(rideForm.departure) }}

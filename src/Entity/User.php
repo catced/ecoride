@@ -46,6 +46,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $credit = 20;
 
+    #[ORM\Column]
+    private ?bool $RGPD = null;
+
     // #[ORM\Column(type: 'string', length: 20, nullable: true)]
     // private ?string $userType = null; // Passager, Chauffeur, Chauffeur-Passager
 
@@ -232,6 +235,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     //     return $this;
     // }
+    
+    
+    public function isRGPD(): ?bool
+    {
+        return $this->RGPD;
+    }
+
+    public function setRGPD(bool $RGPD): static
+    {
+        $this->RGPD = $RGPD;
+
+        return $this;
+    }
+
 
   
 }

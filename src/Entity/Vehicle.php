@@ -59,6 +59,8 @@ private User $owner;
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateFirstUse = null;
 
+  
+
     // /**
     //  * @var Collection<int, User>
     //  */
@@ -138,6 +140,7 @@ private User $owner;
 
     //     return $this;
     // }
+
 
    
 

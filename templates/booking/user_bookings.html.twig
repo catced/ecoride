@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes réservations{% endblock %}
+
+{% block body %}
+    <h1>Mes réservations</h1>
+    {% for booking in bookings %}
+        <p>Trajet : {{ booking.ride.departure }} ? {{ booking.ride.destination }}</p>
+        <p>Date : {{ booking.ride.departureDay|date('d/m/Y H:i') }}</p>
+        <p>Places réservées : {{ booking.seatsBooked }}</p>
+        <hr>
+    {% else %}
+        <p>Aucune réservation enregistrée.</p>
+    {% endfor %}
+{% endblock %}

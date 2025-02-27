@@ -11,3 +11,6 @@ admin:
 app_login:
     path: /login
     controller: App\Controller\SecurityController::login
+# search_results:
+#     path: /search-results
+#     controller: App\Controller\SearchController::searchResults

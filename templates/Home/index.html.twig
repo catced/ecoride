@@ -12,6 +12,11 @@
     <div class="container text-center mt-5">
         <h1>Bienvenue chez EcoRide</h1>
         <p>Votre solution idéale pour trouver et planifier vos itinéraires en toute simplicité.</p>
+        <p>Notre startup française a pour objectif de réduire l'impact environnemtanl des déplacements</p>
+        <p>en favorisant le covoiturage.</p>
+
+        <p>Nous avons pour objectif de devenir la principale plateforme de covoiturage pour les voyageurs</p>
+        <p>soucieux de l'environnement et ceux qui recherchent une solution économique pour leurs déplacements.</p>
 
         <!-- Barre de recherche -->
         <div class="search-bar mt-4">
@@ -19,7 +24,7 @@
                 <input type="text" name="query" class="form-control" placeholder="Rechercher un itinéraire...">
                 <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
             </form> #}
-            <form method="GET" > {#action="{{ path('app_search_results') }}"#}
+            {# <form action="{{ path('search_results') }}" method="GET" >
                 <div class="form-group">
                     <label for="departure">Point de départ</label>
                     <input type="text" id="departure" name="departure" class="form-control" required>
@@ -40,7 +45,7 @@
         </div>
 
         <input type="text" id="search" placeholder="Rechercher un itinéraire...">
-        <div id="results"></div>
+        <div id="results"></div> #}
     </div>
 
     <!-- Pied de page -->

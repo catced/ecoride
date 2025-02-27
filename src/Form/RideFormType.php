@@ -25,7 +25,7 @@ class RideFormType extends AbstractType
         // $builder
         //     ->add('departure', TextType::class, ['label' => 'Départ'])
         //     ->add('arrival', TextType::class, ['label' => 'Arrivée'])
-        //     ->add('departureTime', DateTimeType::class, ['label' => 'Heure de départ'])
+        //     ->add('departureDay', DateTimeType::class, ['label' => 'Heure de départ'])
         //     ->add('price', MoneyType::class, ['label' => 'Prix'])
         //     ->add('availableSeats', IntegerType::class, ['label' => 'Places disponibles']);
 
@@ -41,7 +41,7 @@ class RideFormType extends AbstractType
                 'label' => 'Ville d\'arrivée',
                 'constraints' => [new NotBlank()],
             ])
-            ->add('departureTime', DateTimeType::class, [
+            ->add('departureDay', DateTimeType::class, [
                 'label' => 'Date et heure',
                 'widget' => 'single_text',
                 'constraints' => [new NotBlank()],

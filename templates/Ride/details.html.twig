@@ -1,28 +1,40 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Covoiturage{% endblock %}</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-</head>
-<body>
+
     
     {% extends 'base.html.twig' %}
 
-    {% block title %}D�tails du trajet{% endblock %}
+    {% block title %}Détails du trajet{% endblock %}
     
     {% block body %}
-        <h1>{{ ride.departure }} ? {{ ride.destination }}</h1>
-        <p>Date : {{ ride.date|date('d/m/Y H:i') }}</p>
-        <p>Conducteur : {{ ride.driver.username }}</p>
-        <p>Places disponibles : {{ ride.availableSeats }}</p>
-        <p>Prix : {{ ride.price }} ?</p>
+
     
-        {% if app.user and app.user != ride.driver %}
-            <a href="{{ path('ride_book', { id: ride.id }) }}" class="btn">R�server une place</a>
-        {% endif %}
+
+        <h1>{{ ride.departure }} à {{ ride.destination }}</h1>
+        <p>Date : {{ ride.departureDay|date('d/m/Y') }} à {{ ride.departureDay|date('H:i') }}</p>
+        <p>Conducteur : {{ ride.driver.pseudo }}</p>
+        {# <p>Places disponibles : {{ ride.availableSeats }}</p> #}
+        <p>Prix : {{ ride.price }} €</p>
+    
+        {% if app.user and app.user != ride.driver %} 
+        {# <label for="seats">Nombre de places :</label>
+        <input type="number" id="seats" name="seats" value="1" min="1" max="{{ ride.AvailableSeats }}" required>
+        <a href="{{ path('ride_book', { id: ride.id }) }}" class="btn"></a>
+            <button type="submit">Réserver</button> #}
+            {# <a href="{{ path('ride_book', { id: ride.id }) }}" class="btn">Réserver une place</a>
+            <button type="submit">Reserver</button> #}
+            <form method="post" action="{{ path('ride_book', { id: ride.id }) }}">
+                <label for="seats">Nombre de places :</label>
+                <input type="number" id="seats" name="seats" value="1" min="1" max="{{ ride.availableSeats }}" required>
+            
+                <button type="submit" class="btn btn-primary">Réserver</button>
+            </form>
+        {% endif %} 
+
+        {% for label, messages in app.flashes %}
+            <div class="alert alert-{{ label }}">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endfor %}
     {% endblock %}
     
-</body>
-</html>

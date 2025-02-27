@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\RideRepository;
@@ -20,8 +21,8 @@ class Ride
     #[ORM\Column(type: 'string', length: 255)]
     private ?string $destination = null;
 
-    #[ORM\Column(type: 'datetime')]
-    private ?\DateTimeInterface $departureTime = null;
+    #[ORM\Column(type: 'date')]
+    private ?\DateTimeInterface $departureDay = null;
 
     #[ORM\Column(type: 'float')]
     #[Assert\NotBlank]
@@ -32,6 +33,9 @@ class Ride
     #[Assert\NotBlank]
     private int $duration;
 
+    #[ORM\Column(type: "integer")]
+    private $availableSeats;
+
     #[ORM\ManyToOne(targetEntity: Vehicle::class)]
     #[ORM\JoinColumn(nullable: false)]
     private Vehicle $vehicle;
@@ -39,6 +43,9 @@ class Ride
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private User $driver;
+
+    #[ORM\Column(type: 'time')]
+    private ?\DateTimeInterface $departureTime = null;
 
     public function getId(): ?int
     {
@@ -67,14 +74,14 @@ class Ride
         return $this;
     }
 
-    public function getDepartureTime(): ?\DateTimeInterface
+    public function getDepartureDay(): ?\DateTimeInterface
     {
-        return $this->departureTime;
+        return $this->departureDay;
     }
 
-    public function setDepartureTime(\DateTimeInterface $departureTime): self
+    public function setDepartureDay(\DateTimeInterface $departureDay): self
     {
-        $this->departureTime = $departureTime;
+        $this->departureDay = $departureDay;
         return $this;
     }
 
@@ -86,4 +93,36 @@ class Ride
     public function setVehicle(Vehicle $vehicle): self { $this->vehicle = $vehicle; return $this; }
     public function getDriver(): User { return $this->driver; }
     public function setDriver(User $driver): self { $this->driver = $driver; return $this; }
+
+    public function getAvailableSeats(): ?int
+    {
+        return $this->availableSeats;
+    }
+
+    public function setAvailableSeats(int $availableSeats): self
+    {
+        $this->availableSeats = $availableSeats;
+        return $this;
+    }
+
+    public function reserveSeats(int $seats): bool
+    {
+        if ($this->availableSeats >= $seats) {
+            $this->availableSeats -= $seats;
+            return true;
+        }
+        return false;
+    }
+
+    public function getDepartureTime(): ?\DateTimeInterface
+    {
+        return $this->departureTime;
+    }
+
+    public function setDepartureTime(\DateTimeInterface $departureTime): static
+    {
+        $this->departureTime = $departureTime;
+
+        return $this;
+    }
 }

@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace utilisateur{% endblock %}
+
+{% block body %}
+    <h1>Bienvenue {{ app.user.name }} !</h1>
+
+    <p>Choisissez votre rôle :</p>
+    
+    {# <form id="role-form"> #}
+    <form method="post" action="{{ path('set_role') }}">
+        <label>
+            <input type="radio" name="role" value="passager" > Passager
+        </label>
+        <label>
+            <input type="radio" name="role" value="chauffeur"> Chauffeur
+        </label>
+        <label>
+            <input type="radio" name="role" value="chauffeur-passager"> Chauffeur-Passager
+        </label>
+        {# <button type="submit" id="validate-btn">Valider</button> #}
+    </form>
+
+  
+    <h1>Tableau de bord</h1>
+
+    {# <h2>Ajouter un véhicule</h2>
+    {{ form_start(vehicleForm) }} 
+        {{ form_widget(vehicleForm) }}
+        <button type="submit">Enregistrer le véhicule</button>
+    {{ form_end(vehicleForm) }} #}
+
+    {# <h2>Proposer un trajet</h2>
+    {{ form_start(rideForm) }}
+        {{ form_widget(rideForm) }}
+        <button type="submit">Proposer le trajet</button>
+    {{ form_end(rideForm) }} #}
+
+    <h2>Vos véhicules</h2>
+    {% if vehicles is not defined or vehicles is empty %}
+        <p>Vous n'avez pas encore enregistré de véhicule.</p>
+    {% else %}
+        <ul>
+            {% for vehicle in vehicles %}
+                <li>{{ vehicle.brand }} - {{ vehicle.model }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %} 
+
+    {% if app.user and rideForm is defined  %}   
+    <h3>Proposer un voyage</h3>
+    {{ form_start(rideForm) }}
+        {{ form_row(rideForm.departure) }}
+        {{ form_row(rideForm.destination) }}
+        {{ form_row(rideForm.departureDay) }}
+        {{ form_row(rideForm.price) }}
+        {{ form_row(rideForm.duration) }}
+        {{ form_row(rideForm.vehicle) }}
+        <button type="submit">Proposer </button> 
+    {{ form_end(rideForm) }} 
+    {% endif %} 
+
+    <div id="vehicle-form" style="display: none;">
+        <h3>Informations du véhicule</h3>
+        {{ form_start(vehicleForm) }}
+            {{ form_row(vehicleForm.licensePlate) }} 
+            {{ form_row(vehicleForm.brand) }}
+            {{ form_row(vehicleForm.model) }}
+            {{ form_row(vehicleForm.energy) }}
+            {{ form_row(vehicleForm.dateFirstUse) }}
+            {{ form_row(vehicleForm.color) }}
+            {{ form_row(vehicleForm.seatscount) }}
+
+            {# <button type="submit">Enregistrer</button> #}
+        <h3>Préférences</h3>
+
+        <div>
+            {{ form_row(vehicleForm.preferences) }}
+        </div>
+
+            {# <h3>Ajoutez vos propres prÃ©fÃ©rences :</h3>
+            <div id="custom-preferences-list">
+                {{ form_widget(form.customPreferences) }}
+            </div>
+
+            <button type="button" id="add-preference">Ajouter une prÃ©fÃ©rence</button> #}
+        {{ form_end(vehicleForm) }}
+    </div>
+   
+
+
+    <script>
+        document.querySelectorAll('input[name="role"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                document.getElementById('vehicle-form').style.display = 
+                    (this.value === 'chauffeur' || this.value === 'chauffeur-passager') ? 'block' : 'none';
+            });
+        });
+        document.getElementById('add-preference').addEventListener('click', function () {
+            let container = document.getElementById('custom-preferences-list');
+            let index = container.children.length;
+            
+            let newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.name = 'vehicle[customPreferences][' + index + ']';
+            newInput.classList.add('custom-preference');
+            
+            container.appendChild(newInput);
+        });
+       
+        document.getElementById("role-form").addEventListener("submit", function (event) {
+            const selectedRole = document.querySelector('input[name="role"]:checked').value;
+            
+            if (selectedRole === "passager") {
+                event.preventDefault(); // Empêche l'envoi classique du formulaire
+                window.location.href = "/passager-dashboard"; // 🔄 Redirection
+            }
+        });
+        
+    </script>
+{% endblock %}

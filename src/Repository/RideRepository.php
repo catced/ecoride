@@ -40,12 +40,23 @@ class RideRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-    public function findBySearchQuery(string $query)
-{
-    return $this->createQueryBuilder('r')
-        ->where('r.departure LIKE :query OR r.destination LIKE :query')
-        ->setParameter('query', '%' . $query . '%')
-        ->getQuery()
-        ->getResult();
-}
+//     public function findBySearchQuery(string $query)
+// {
+//     return $this->createQueryBuilder('r')
+//         ->where('r.departure LIKE :query OR r.destination LIKE :query')
+//         ->setParameter('query', '%' . $query . '%')
+//         ->getQuery()
+//         ->getResult();
+// }
+
+    public function findWithVehicle(int $id): ?Ride
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.vehicle', 'v')
+            ->addSelect('v')
+            ->where('r.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

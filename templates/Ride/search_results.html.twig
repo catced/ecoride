@@ -1,0 +1,78 @@
+{# {% extends 'base.html.twig' %}
+
+{% block title %}Résultats de recherche{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Résultats de votre recherche</h1>
+
+    {% if rides is empty %}
+        <p>Aucun itinéraire trouvé pour cette date.</p>
+
+        {% if alternativeRide %}
+            <p>?? Cependant, nous avons trouvé un itinéraire proche :</p>
+            <ul>
+                <li><strong>Départ :</strong> {{ alternativeRide.departure }}</li>
+                <li><strong>Arrivée :</strong> {{ alternativeRide.destination }}</li>
+                <li><strong>Date :</strong> {{ alternativeRide.departureDay|date('d/m/Y H:i') }}</li>
+                <li><strong>Prix :</strong> {{ alternativeRide.price }} ?</li>
+                <li><strong>Conducteur :</strong> {{ alternativeRide.driver.pseudo }}</li>
+            </ul>
+            <a href="{{ path('ride_details', {'id': alternativeRide.id}) }}" class="btn btn-primary">Voir ce trajet</a>
+        {% else %}
+            <p>?? Aucun itinéraire proche n'a été trouvé.</p>
+        {% endif %}
+    {% else %}
+        <ul>
+            {% for ride in rides %}
+                <li>
+                    <strong>Départ :</strong> {{ ride.departure }} <br>
+                    <strong>Arrivée :</strong> {{ ride.destination }} <br>
+                    <strong>Date :</strong> {{ ride.departureDay|date('d/m/Y H:i') }} <br>
+                    <strong>Prix :</strong> {{ ride.price }} € <br>
+                    <a href="{{ path('ride_details', {'id': ride.id}) }}" class="btn btn-info">Voir le trajet</a>
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %} #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Résultats de recherche{% endblock %}
+
+{% block body %}
+    <h1>Résultats de recherche</h1>
+
+    <!-- Formulaire de filtre -->
+    {# {{ form_start(form) }}
+        {{ form_row(form.departure) }}
+        {{ form_row(form.destination) }}
+        {{ form_row(form.departureDay) }}
+        <button type="submit">Filtrer</button>
+    {{ form_end(form) }} #}
+
+    <h2>Trajets disponibles</h2>
+  
+    
+    {% if rides is not empty %}
+        <ul>
+            {% for ride in rides %}
+                <li>
+                    {{ ride.departure }} - {{ ride.destination }} le {{ ride.departureDay|date('d/m/Y') }}
+                    <p>Nombre de places disponibles : {{ ride.availableSeats }}</p>
+                    <p>Départ à : {{ ride.departureTime|date('H:i') }}</p>
+                    <p>Conducteur : {{ ride.driver.pseudo }}</p>
+                    <a href="{{ path('ride_details', { 'id': ride.id }) }}">Détails</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun trajet ne correspond aux filtres sélectionnés.</p>
+
+         <!-- Bouton de retour vers l'espace utilisateur -->
+    <a href="{{ path('user_dashboard') }}" class="btn btn-secondary">Retour à l'espace utilisateur</a>
+    {% endif %}
+{% endblock %}

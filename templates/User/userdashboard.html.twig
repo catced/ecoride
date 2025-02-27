@@ -33,7 +33,8 @@
     
         <label for="departureDay">Date :</label>
         {# <input type="datetime-local" id="departureDay" name="departureDay"> #}
-        <input type="text" id="departureDay" name="departureDay" placeholder="dd/mm/yyyy" />
+        <input type="text" id="departureDay" name="departureDay" placeholder="dd/mm/yyyy" onfocus="(this.type='date')" onblur="formatDate(this)">
+        
     
         <button type="submit">Rechercher</button>
     </form>

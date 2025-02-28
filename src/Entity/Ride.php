@@ -29,9 +29,12 @@ class Ride
     #[Assert\Positive]
     private float $price;
 
-    #[ORM\Column(type: 'integer')]
-    #[Assert\NotBlank]
-    private int $duration;
+    // #[ORM\Column(type: 'integer')]
+    // #[Assert\NotBlank]
+    // private int $duration;
+    #[ORM\Column(type: 'time', nullable: false)]
+    private ?\DateTime $duration = null;
+
 
     #[ORM\Column(type: "integer")]
     private $availableSeats;
@@ -87,12 +90,23 @@ class Ride
 
     public function getPrice(): float { return $this->price; }
     public function setPrice(float $price): self { $this->price = $price; return $this; }
-    public function getDuration(): int { return $this->duration; }
-    public function setDuration(int $duration): self { $this->duration = $duration; return $this; }
+    // public function getDuration(): int { return $this->duration; }
+    // public function setDuration(int $duration): self { $this->duration = $duration; return $this; }
     public function getVehicle(): Vehicle { return $this->vehicle; }
     public function setVehicle(Vehicle $vehicle): self { $this->vehicle = $vehicle; return $this; }
     public function getDriver(): User { return $this->driver; }
     public function setDriver(User $driver): self { $this->driver = $driver; return $this; }
+
+    public function getDuration(): ?\DateTime
+    {
+        return $this->duration;
+    }
+
+    public function setDuration(?\DateTime $duration): self
+    {
+        $this->duration = $duration;
+        return $this;
+    }
 
     public function getAvailableSeats(): ?int
     {

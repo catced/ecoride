@@ -28,7 +28,7 @@ class RideController extends AbstractController
     {
         $ride = $rideRepository->find($id);
         if (!$ride) {
-            throw $this->createNotFoundException("Trajet non trouvÃ© !");
+            throw $this->createNotFoundException("Trajet non trouvé !");
         }
 
         return $this->render('ride/details.html.twig', [
@@ -41,10 +41,10 @@ class RideController extends AbstractController
 // {
 //     $query = $request->query->get('q', '');
     
-//     // Effectuer une recherche en base de donnï¿½es
+//     // Effectuer une recherche en base de donnÃ¯Â¿Â½es
 //     $rides = $rideRepository->findBySearchQuery($query);
 
-//     // Formater les rï¿½sultats pour le JSON
+//     // Formater les rÃ¯Â¿Â½sultats pour le JSON
 //     $results = [];
 //     foreach ($rides as $ride) {
 //         $results[] = [
@@ -67,13 +67,13 @@ public function bookRide(int $id, Ride $ride, Request $request, RideRepository $
         throw $this->createNotFoundException("Trajet non trouvé !");
     }
 
-    // Récupération du véhicule associé au trajet
+    // RÃ©cupÃ©ration du vÃ©hicule associÃ© au trajet
     $vehicle = $ride->getVehicle();
     if (!$vehicle) {
         throw $this->createNotFoundException("Aucun véhicule associé à ce trajet.");
     }
 
-    // Récupération du nombre de places demandées
+    // RÃ©cupÃ©ration du nombre de places demandÃ©es
     $seatsRequested = (int) $request->request->get('seats', 1);
 
     $user = $this->getUser();
@@ -83,9 +83,9 @@ public function bookRide(int $id, Ride $ride, Request $request, RideRepository $
     }
 
 
-    // Vérification du nombre de places disponibles
+    // VÃ©rification du nombre de places disponibles
     if ($seatsRequested > 0 && $ride->getAvailableSeats() >= $seatsRequested) {
-        // Mise à jour des places disponibles
+        // Mise Ã  jour des places disponibles
         $ride->setAvailableSeats($ride->getAvailableSeats() - $seatsRequested);
 
         $booking = new Booking();
@@ -100,8 +100,8 @@ public function bookRide(int $id, Ride $ride, Request $request, RideRepository $
         $em->flush();
       
         $this->addFlash('success', "Vous avez réservé $seatsRequested place(s) pour le trajet du " . 
-            $ride->getDepartureDay()->format('d/m/Y à H:i') . " de " . 
-            $ride->getDeparture() . " à " . $ride->getDestination() . ".");
+            $ride->getDepartureDay()->format('d/m/Y Ã  H:i') . " de " . 
+            $ride->getDeparture() . " Ã  " . $ride->getDestination() . ".");
     } else {
         $this->addFlash('error', "Désolé, il n'y a pas assez de places disponibles.");
     }
@@ -110,20 +110,20 @@ public function bookRide(int $id, Ride $ride, Request $request, RideRepository $
 }
 
     // if ($ride->getSeatsCount() > 0) {
-    //     // On réserve une place
+    //     // On rÃ©serve une place
     //     $ride->setSeatsCount($ride->getSeatsCount() - 1);
 
-    //     // Sauvegarde de la mise à jour dans la base de données
+    //     // Sauvegarde de la mise Ã  jour dans la base de donnÃ©es
     //     $entityManager = $this->getDoctrine()->getManager();
     //     $entityManager->flush();
 
     //     // Message de confirmation
-    //     $this->addFlash('success', 'Vous avez réservé une place pour le trajet du ' . $ride->getDepartureDay()->format('d/m/Y à H:i') . ' de ' . $ride->getDeparture() . ' à ' . $ride->getDestination());
+    //     $this->addFlash('success', 'Vous avez rÃ©servÃ© une place pour le trajet du ' . $ride->getDepartureDay()->format('d/m/Y Ã  H:i') . ' de ' . $ride->getDeparture() . ' Ã  ' . $ride->getDestination());
     // } else {
     //     // Message si aucune place disponible
-    //     $this->addFlash('error', 'Désolé, il n\'y a plus de place disponible pour ce trajet.');
+    //     $this->addFlash('error', 'DÃ©solÃ©, il n\'y a plus de place disponible pour ce trajet.');
     // }
 
-    // Redirection vers la page de détails du trajet
+    // Redirection vers la page de dÃ©tails du trajet
 
 }

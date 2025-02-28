@@ -97,6 +97,11 @@ public function search(Request $request, RideRepository $rideRepository, EntityM
     $destination = $request->query->get('destination');
     //$today = new \DateTimeImmutable(); 
     $departureDay =  $request->query->get('departureDay');
+    //$energy = $request->query->get('energy');
+    $price = $request->query->get('price');
+    $availableSeats = $request->query->get('availableSeats');
+    $duration = $request->query->get('duration');
+
 
     if ($departureDay) {
         $departureDay = \DateTime::createFromFormat('d/m/Y', $departureDay);
@@ -114,11 +119,28 @@ public function search(Request $request, RideRepository $rideRepository, EntityM
     ->andWhere('r.availableSeats >= 1')
     ->andWhere('r.departureDay >= :departureDay')
     ->setParameter('departure', $departure)
-    ->setParameter('destination', $destination);
-   
-    if ($departureDay) {
-        $ridesQuery->setParameter('departureDay', $departureDay);
+    ->setParameter('destination', $destination)
+    ->setParameter('departureDay', $departureDay);
+    if ($price) {
+        $ridesQuery->andWhere('r.price <= :price')
+                   ->setParameter('price', $price);
     }
+    if ($availableSeats) {
+        $ridesQuery->andWhere('r.availableSeats >= :availableSeats')
+                   ->setParameter('availableSeats', $availableSeats);
+    }
+    if ($duration) {
+        $ridesQuery->andWhere('r.duration <= :duration')
+                   ->setParameter('duration', $duration);
+    }
+    
+    // if ($availableSeats) {
+    //     $ridesQuery->andWhere('r.availableSeats <= :availableSeats')
+    //                ->setParameter('availableSeats', $availableSeats);
+    // }
+    // if ($departureDay) {
+    //     $ridesQuery->setParameter('departureDay', $departureDay);
+    // }
 
     $rides = $ridesQuery->getQuery()->getResult();
     

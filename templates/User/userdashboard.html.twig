@@ -34,7 +34,7 @@
         <label for="departureDay">Date :</label>
         {# <input type="datetime-local" id="departureDay" name="departureDay"> #}
         <input type="text" id="departureDay" name="departureDay" placeholder="dd/mm/yyyy" onfocus="(this.type='date')" onblur="formatDate(this)">
-        
+        <input type="hidden" id="hiddenDepartureDay" name="departureDay">
     
         <button type="submit">Rechercher</button>
     </form>
@@ -107,6 +107,27 @@
 
     
     <script>
+        function formatDate(input) {
+            let hiddenInput = document.getElementById('hiddenDepartureDay');
+    
+            if (!input.value) {
+                hiddenInput.value = ""; // Assurez-vous d'envoyer une valeur vide au serveur
+                return;
+            }
+    
+            let date = new Date(input.value);
+            if (isNaN(date)) return;
+    
+            let day = String(date.getDate()).padStart(2, '0');
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let year = date.getFullYear();
+    
+            let formattedDate = `${day}/${month}/${year}`;
+            input.type = 'text';
+            input.value = formattedDate;
+            hiddenInput.value = formattedDate; // Assurez-vous que la requête inclut bien la date
+        }
+    
         document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll('input[name="role"]').forEach(radio => {
                 let roleRadios = document.querySelectorAll('input[name="role"]');

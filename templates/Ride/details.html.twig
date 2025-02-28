@@ -10,16 +10,28 @@
 
         <h1>{{ ride.departure }} à {{ ride.destination }}</h1>
         <p>Date : {{ ride.departureDay|date('d/m/Y') }} à {{ ride.departureDay|date('H:i') }}</p>
+        <p>Durée du voyage : {{ ride.duration|date('H:i') }}
         <p>Conducteur : {{ ride.driver.pseudo }}</p>
+        <p>Energie : {{ ride.vehicle.energy }}</p>
         {# <p>Places disponibles : {{ ride.availableSeats }}</p> #}
+        <p>Préférences : 
+                        <ul>
+                            {% for preference in ride.vehicle.preferences %}
+                                <li>{{ preference }}</li>
+                            {% else %}
+                                <li>Aucune préférence spécifiée</li>
+                            {% endfor %}
+                        
+                        </ul> 
+        </p>
         <p>Prix : {{ ride.price }} €</p>
     
         {% if app.user and app.user != ride.driver %} 
         {# <label for="seats">Nombre de places :</label>
         <input type="number" id="seats" name="seats" value="1" min="1" max="{{ ride.AvailableSeats }}" required>
         <a href="{{ path('ride_book', { id: ride.id }) }}" class="btn"></a>
-            <button type="submit">Réserver</button> #}
-            {# <a href="{{ path('ride_book', { id: ride.id }) }}" class="btn">Réserver une place</a>
+            <button type="submit">RÃ©server</button> #}
+            {# <a href="{{ path('ride_book', { id: ride.id }) }}" class="btn">RÃ©server une place</a>
             <button type="submit">Reserver</button> #}
             <form method="post" action="{{ path('ride_book', { id: ride.id }) }}">
                 <label for="seats">Nombre de places :</label>

@@ -17,19 +17,20 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class RideFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // $builder
-        //     ->add('departure', TextType::class, ['label' => 'Départ'])
-        //     ->add('arrival', TextType::class, ['label' => 'Arrivée'])
-        //     ->add('departureDay', DateTimeType::class, ['label' => 'Heure de départ'])
+        //     ->add('departure', TextType::class, ['label' => 'DÃ©part'])
+        //     ->add('arrival', TextType::class, ['label' => 'ArrivÃ©e'])
+        //     ->add('departureDay', DateTimeType::class, ['label' => 'Heure de dÃ©part'])
         //     ->add('price', MoneyType::class, ['label' => 'Prix'])
         //     ->add('availableSeats', IntegerType::class, ['label' => 'Places disponibles']);
 
-        //$user = $options['user']; // Récupérer l'utilisateur connecté pour afficher ses véhicules
+        //$user = $options['user']; // RÃ©cupÃ©rer l'utilisateur connectÃ© pour afficher ses vÃ©hicules
         $vehicles = $options['vehicles'];
 
         $builder
@@ -42,7 +43,12 @@ class RideFormType extends AbstractType
                 'constraints' => [new NotBlank()],
             ])
             ->add('departureDay', DateTimeType::class, [
-                'label' => 'Date et heure',
+                'label' => 'Date',
+                'widget' => 'single_text',
+                'constraints' => [new NotBlank()],
+            ])
+            ->add('departureTime', DateTimeType::class, [
+                'label' => 'Heure de départ',
                 'widget' => 'single_text',
                 'constraints' => [new NotBlank()],
             ])
@@ -51,27 +57,38 @@ class RideFormType extends AbstractType
                 'currency' => 'EUR',
                 'constraints' => [new NotBlank()],
             ])
-            ->add('duration', NumberType::class, [
-                'label' => 'Durée (minutes)',
-                'constraints' => [new NotBlank()],
+            // ->add('duration', NumberType::class, [
+            //     'label' => 'Durée ',
+            //     'constraints' => [new NotBlank()],
+            // ])
+            ->add('duration', TextType::class, [
+                'label' => 'Durée (HH:mm)',
+                'attr' => ['placeholder' => 'ex: 02:30'],
+                'constraints' => [
+                    new NotBlank(['message' => 'Veuillez saisir une durée.']),
+                    new Regex([
+                        'pattern' => '/^\d{1,2}:\d{2}$/',
+                        'message' => 'Le format doit être HH:mm (ex: 02:30).'
+                    ]),
+                ],
             ])
             // ->add('vehicle', EntityType::class, [
             //     'class' => Vehicle::class,
-            //     //'choices' => $user->getVehicles(), // Liste des véhicules de l'utilisateur
+            //     //'choices' => $user->getVehicles(), // Liste des vÃ©hicules de l'utilisateur
             //     'choices' => $vehicles,
             //     'choice_label' => function (Vehicle $vehicle) {
             //         return $vehicle->getBrand() . ' - ' . $vehicle->getLicensePlate();
             //     },
-            //     'placeholder' => 'Sélectionnez un véhicule existant',
+            //     'placeholder' => 'SÃ©lectionnez un vÃ©hicule existant',
             //     'required' => false,
             // ])
             ->add('vehicle', EntityType::class, [
                 'class' => Vehicle::class,
-                'choices' => $options['vehicles'], // Utilise l'option pour récupérer les véhicules
+                'choices' => $options['vehicles'], // Utilise l'option pour rÃ©cupÃ©rer les vÃ©hicules
                 'choice_label' => function (Vehicle $vehicle) {
                     return $vehicle->getBrand() . ' - ' . $vehicle->getLicensePlate();
                 },
-                'placeholder' => 'Sélectionnez un véhicule',
+                'placeholder' => 'SÃ©lectionnez un vÃ©hicule',
                 'required' => false,
             ])
             ->add('submit', SubmitType::class, ['label' => 'Proposer le voyage']);

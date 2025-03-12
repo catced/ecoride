@@ -10,55 +10,26 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<Booking>
  */
-class BookingRepository extends ServiceEntityRepository
+class Search_ResultsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Booking::class, User::class);
-    }
-
-    public function countBookingsByDay()
-    {
-        return $this->createQueryBuilder('b')
-            ->select('b.createdAt as day, SUM(b.seatsBooked) as booking_count')
-            ->groupBy('day')
-            ->orderBy('day', 'ASC')
-            ->getQuery()
-            ->getResult();
-    // }
-    // $qb = $this->createQueryBuilder('r')
-    // ->select('r.createdAt as date, COUNT(r.id) as count')
-    // ->groupBy('r.createdAt')
-    // ->getQuery();
-
-    // $results = $qb->getResult();
-
-    // Retourner les résultats formatés pour plus de flexibilité
-    $formattedResults = [];
-    foreach ($results as $result) {
-        $date = $result['date']->format('d-m-Y');
-        $formattedResults[] = [
-            'date' => $date,
-            'count' => $result['count']
-        ];
-    }
-
-    return $formattedResults;
+        parent::__construct($registry, Booking::class);
     }
 
     // public function findByVoyagesPasses(User $user, \DateTime $dateActuelle)
     // {
-    //     return $this->createQueryBuilder('b')
-    //         ->innerJoin('b.ride', 'r')
-    //         ->where('r = :user')
-    //         // ->andWhere('b.createdat < :dateActuelle')
+    //     return $this->createQueryBuilder('v')
+    //         ->innerJoin('v.passagers', 'p')
+    //         ->where('p = :user')
+    //         ->andWhere('v.date < :dateActuelle')
     //         ->setParameter('user', $user)
-    //         // ->setParameter('dateActuelle', $dateActuelle)
-    //         // ->orderBy('b.createdat', 'DESC')
+    //         ->setParameter('dateActuelle', $dateActuelle)
+    //         ->orderBy('v.date', 'DESC')
     //         ->getQuery()
     //         ->getResult();
     // }
-    
+
     // public function findByVoyagesAVenir(User $user, \DateTime $dateActuelle)
     // {
     //     return $this->createQueryBuilder('v')

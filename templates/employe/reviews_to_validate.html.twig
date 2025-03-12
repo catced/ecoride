@@ -1,0 +1,29 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Utilisateur</th>
+            <th>Avis</th>
+            <th>Note</th>
+            {# <th>Date</th> #}
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for review in reviewsToValidate %}
+            <tr>
+                <td>{{ review.passenger.pseudo }}</td> 
+                <td>{{ review.comment }}</td>
+                <td>{{ review.rating }}/5</td>
+               {# <td>{{ review.createdAt|date('d/m/Y H:i') }}</td> #}
+                <td>
+                    <a href="{{ path('validate_review', {id: review.id}) }}" class="btn btn-success btn-sm">Valider</a>
+                    <a href="{{ path('delete_review', {id: review.id}) }}" class="btn btn-danger btn-sm">Supprimer</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6" class="text-center">Aucun avis en attente de validation</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

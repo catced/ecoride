@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Employé{% endblock %}
+
+{% block body %}
+    <h1>Bienvenue sur votre espace </h1>
+
+    {# <li><a href="{{ path('employe_reviews') }}">Les avis à valider </a></li> #}
+    <div class="container">
+        <h1>Dashboard Employé</h1>
+    
+        <div class="mb-3">
+            <a href="{{ path('employe_reviews_to_validate') }}" class="btn btn-primary">
+                🚀 Voyages à valider ({{ reviewsToValidate|length }})
+            </a>
+            <a href="{{ path('employe_unsatisfied_ride') }}" class="btn btn-danger">
+                ⚠️ Insatisfaits du voyage ({{ unsatisfiedRide|length }})
+            </a>
+        </div>
+    </div>
+{% endblock %}

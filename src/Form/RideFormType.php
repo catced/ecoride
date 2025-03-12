@@ -6,8 +6,8 @@ use App\Entity\Ride;
 use App\Entity\User;
 use App\Entity\Vehicle;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -42,27 +42,27 @@ class RideFormType extends AbstractType
                 'label' => 'Ville d\'arrivée',
                 'constraints' => [new NotBlank()],
             ])
-            ->add('departureDay', DateTimeType::class, [
+            ->add('departureDay', DateType::class, [
                 'label' => 'Date',
                 'widget' => 'single_text',
                 'constraints' => [new NotBlank()],
             ])
-            ->add('departureTime', DateTimeType::class, [
+            ->add('departureTime', TimeType::class, [
                 'label' => 'Heure de départ',
+                
                 'widget' => 'single_text',
                 'constraints' => [new NotBlank()],
+               
             ])
             ->add('price', MoneyType::class, [
                 'label' => 'Prix ',
                 'currency' => 'EUR',
                 'constraints' => [new NotBlank()],
             ])
-            // ->add('duration', NumberType::class, [
-            //     'label' => 'Durée ',
-            //     'constraints' => [new NotBlank()],
-            // ])
+          
             ->add('duration', TextType::class, [
                 'label' => 'Durée (HH:mm)',
+                
                 'attr' => ['placeholder' => 'ex: 02:30'],
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez saisir une durée.']),
@@ -72,26 +72,18 @@ class RideFormType extends AbstractType
                     ]),
                 ],
             ])
-            // ->add('vehicle', EntityType::class, [
-            //     'class' => Vehicle::class,
-            //     //'choices' => $user->getVehicles(), // Liste des vÃ©hicules de l'utilisateur
-            //     'choices' => $vehicles,
-            //     'choice_label' => function (Vehicle $vehicle) {
-            //         return $vehicle->getBrand() . ' - ' . $vehicle->getLicensePlate();
-            //     },
-            //     'placeholder' => 'SÃ©lectionnez un vÃ©hicule existant',
-            //     'required' => false,
-            // ])
+           
             ->add('vehicle', EntityType::class, [
+                'label' => 'Véhicule',
                 'class' => Vehicle::class,
                 'choices' => $options['vehicles'], // Utilise l'option pour rÃ©cupÃ©rer les vÃ©hicules
                 'choice_label' => function (Vehicle $vehicle) {
                     return $vehicle->getBrand() . ' - ' . $vehicle->getLicensePlate();
                 },
-                'placeholder' => 'SÃ©lectionnez un vÃ©hicule',
+                'placeholder' => 'Sélectionnez un véhicule',
                 'required' => false,
-            ])
-            ->add('submit', SubmitType::class, ['label' => 'Proposer le voyage']);
+            ]);
+            // ->add('submit', SubmitType::class, ['label' => 'Proposer le voyage']);
     
     }
 

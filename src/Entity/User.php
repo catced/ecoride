@@ -249,6 +249,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isSuspended = false;
 
+    public function isSuspended(): bool
+    {
+        return $this->isSuspended;
+    }
+
+    public function setIsSuspended(bool $isSuspended): self
+    {
+        $this->isSuspended = $isSuspended;
+        return $this;
+    }
   
 }

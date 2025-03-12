@@ -1,35 +1,35 @@
 {# {% extends 'base.html.twig' %}
 
-{% block title %}Résultats de recherche{% endblock %}
+{% block title %}RÃ©sultats de recherche{% endblock %}
 
 {% block body %}
 <div class="container">
-    <h1>Résultats de votre recherche</h1>
+    <h1>RÃ©sultats de votre recherche</h1>
 
     {% if rides is empty %}
-        <p>Aucun itinéraire trouvé pour cette date.</p>
+        <p>Aucun itinÃ©raire trouvÃ© pour cette date.</p>
 
         {% if alternativeRide %}
-            <p>?? Cependant, nous avons trouvé un itinéraire proche :</p>
+            <p>?? Cependant, nous avons trouvÃ© un itinÃ©raire proche :</p>
             <ul>
-                <li><strong>Départ :</strong> {{ alternativeRide.departure }}</li>
-                <li><strong>Arrivée :</strong> {{ alternativeRide.destination }}</li>
+                <li><strong>DÃ©part :</strong> {{ alternativeRide.departure }}</li>
+                <li><strong>ArrivÃ©e :</strong> {{ alternativeRide.destination }}</li>
                 <li><strong>Date :</strong> {{ alternativeRide.departureDay|date('d/m/Y H:i') }}</li>
                 <li><strong>Prix :</strong> {{ alternativeRide.price }} ?</li>
                 <li><strong>Conducteur :</strong> {{ alternativeRide.driver.pseudo }}</li>
             </ul>
             <a href="{{ path('ride_details', {'id': alternativeRide.id}) }}" class="btn btn-primary">Voir ce trajet</a>
         {% else %}
-            <p>?? Aucun itinéraire proche n'a été trouvé.</p>
+            <p>?? Aucun itinÃ©raire proche n'a Ã©tÃ© trouvÃ©.</p>
         {% endif %}
     {% else %}
         <ul>
             {% for ride in rides %}
                 <li>
-                    <strong>Départ :</strong> {{ ride.departure }} <br>
-                    <strong>Arrivée :</strong> {{ ride.destination }} <br>
+                    <strong>DÃ©part :</strong> {{ ride.departure }} <br>
+                    <strong>ArrivÃ©e :</strong> {{ ride.destination }} <br>
                     <strong>Date :</strong> {{ ride.departureDay|date('d/m/Y H:i') }} <br>
-                    <strong>Prix :</strong> {{ ride.price }} € <br>
+                    <strong>Prix :</strong> {{ ride.price }} â¬ <br>
                     <a href="{{ path('ride_details', {'id': ride.id}) }}" class="btn btn-info">Voir le trajet</a>
                 </li>
                 <hr>
@@ -45,20 +45,6 @@
 
 {% block body %}
 
-{# <form method="get" action="{{ path('search_results') }}" id="filter-form">
-    <h2>Filtres supplémentaires</h2>
-
-    <label for="price">Prix max (€) :</label>
-    <input type="float" id="price" name="price" min="0" step="1" placeholder="ex: 50">
-
-    <label for="duration">Durée du voyages :</label>
-    <input type="time" id="duration" name="duration" min="1" step="1">
-
-    <label for="availableSeats">Places disponibles :</label>
-    <input type="number" id="availableSeats" name="availableSeats" min="1" step="1">
-
-    <button type="submit">Appliquer les filtres</button>
-</form> #}
 <form method="get" action="{{ path('search_results') }}" id="filter-form">
     <h2>Filtres supplémentaires</h2>
 
@@ -83,6 +69,38 @@
     <button type="submit">Appliquer les filtres</button>
 </form>
 
+    <li><a href="{{ path('app_mes_voyages') }}">Mes réservations passées ou futures </a></li>
+    
+
+{# {% extends 'base.html.twig' %} #}
+
+{# {% block title %}Mes Voyages{% endblock %} #}
+
+        
+{# <h1>Mes Voyages</h1> #}
+
+ {# <h2>Voyages à venir</h2> #}
+{#{{ dump(voyagesavenir) }}
+{% if voyagesavenir is not empty %}
+    <ul>
+        {% for voyage in voyagesavenir %}
+            <li>{{ voyage.destination }} - {{ voyage.date|date('d/m/Y') }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucun voyage à venir.</p>
+{% endif %} #}
+
+{# <h2>Voyages effectués</h2>
+{% if voyagespasses is not empty %}
+    <ul>
+        {% for voyage in voyagespasses %}
+            <li>{{ voyage.destination }} - {{ voyage.date|date('d/m/Y') }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucun voyage effectué.</p>
+{% endif %} #}
 
 
     <h1>Résultats de recherche</h1>
@@ -104,7 +122,7 @@
                 <li>
                     {{ ride.departure }} - {{ ride.destination }} le {{ ride.departureDay|date('d/m/Y') }}
                     <p>Nombre de places disponibles : {{ ride.availableSeats }}</p>
-                    <p>Départ à : {{ ride.departureTime|date('H:i') }}</p>
+                    <p>Départ à  : {{ ride.departureTime|date('H:i') }}</p>
                     <p>Conducteur : {{ ride.driver.pseudo }}</p>
                     <a href="{{ path('ride_details', { 'id': ride.id }) }}">Détails</a>
                 </li>

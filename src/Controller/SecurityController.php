@@ -53,4 +53,19 @@ class SecurityController extends AbstractController
     // {
     //     throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     // }
+
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
+{
+    // Récupérer l'utilisateur connecté
+    $user = $token->getUser();
+
+    // Vérifier si l'utilisateur est un employé
+    if (in_array('ROLE_EMPLOYE', $user->getRoles(), true)) {
+        return $this->render('employe/dashboard.html.twig');
+    }
+
+    // Redirection par défaut (ex: admin ou autre rôle)
+    //return new RedirectResponse($this->urlGenerator->generate('home'));
+    return $this->render('user/userdashboard.html.twig');
+}
 }

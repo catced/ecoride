@@ -1,0 +1,22 @@
+
+
+<table>
+    <tbody>
+        {% for booking in bookings %}
+            {% if booking.ride.status == 'completed' %}
+                <tr>
+                    <td>{{ booking.ride.departure }} ? {{ booking.ride.destination }}</td>
+                    <td>
+                        <form method="post" action="{{ path('validate_ride', {'id': booking.id}) }}">
+                            <button type="submit" class="btn btn-success">Valider</button>
+                        </form>
+                        <form method="post" action="{{ path('report_issue', {'id': booking.id}) }}">
+                            <button type="submit" class="btn btn-danger">Signaler un problème</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+

@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Ride;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -28,6 +29,11 @@ class RideFilterFormType extends AbstractType
                'widget' => 'single_text',
                 'label' => 'Date de départ',
                
+            ])
+            ->add('availableSeats', IntegerType::class, [
+                'label' => 'Places disponibles',
+                'mapped' => false, // Ne sera pas lié à un champ de l'entité Ride directement
+                'attr' => ['style' => 'display:none;'], // Masquer le champ dans le formulaire
             ]);
           
     }

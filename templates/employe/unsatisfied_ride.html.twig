@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Voyages insatisfaits{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h2>?? Insatisfaits du voyage</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                {# <th>ID Voyage</th> #}
+                <th>Voyageur</th>
+                <th>Email voyageur</th>
+                <th>Chauffeur</th>
+                <th>Email chauffeur</th>
+                <th>Jour voyage</th>
+                <th>Heure départ</th>
+                <th>Départ</th>
+                <th>Arrivée</th>
+            </tr>
+        </thead>
+        <tbody>
+         
+            {% for review in unsatisfiedRide %}
+                <tr>
+                    {# <td>{{ review.ride.id }}</td> #}
+                    {% set booking = review.ride.bookings|first %} {# On prend la première réservation #}
+
+                    {% if booking %}
+                        <td>{{ booking.user.pseudo }}</td>
+                        <td>{{ booking.user.email }}</td>
+                    {% else %}
+                        <td colspan="2">Aucun passager</td>
+                    {% endif %}
+                    {# <td>{{ review.user.pseudo }}</td>
+                    <td>{{ review.user.email }}</td> #}
+                    <td>{{ review.ride.driver.pseudo }}</td>
+                    <td>{{ review.ride.driver.email }}</td>
+                    <td>{{ review.ride.departureDay|date('d:m:Y') }}</td>
+                    <td>{{ review.ride.departureTime|date('H:i') }}</td>
+                    <td>{{ review.ride.departure }}</td>
+                    <td>{{ review.ride.destination }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">Aucun voyage insatisfait</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -12,6 +12,11 @@ use App\Form\RideFilterFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\VarDumper\VarDumper; 
+use App\Repository\BookingRepository;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Repository\Search_ResultsRepository;
+
+
 
 class Search_ResultsController extends AbstractController
 {
@@ -96,31 +101,58 @@ public function search(Request $request, RideRepository $rideRepository, EntityM
     $departure = $request->query->get('departure');
     $destination = $request->query->get('destination');
     //$today = new \DateTimeImmutable(); 
-    $departureDay =  $request->query->get('departureDay');
+    $departureDayString =  $request->query->get('departureDay');
+    if ($departureDayString) {
+        $departureDay = \DateTime::createFromFormat('d/m/Y', $departureDayString);
+        if (!$departureDay) {
+            throw new \Exception("Format de date invalide !");
+        }
+    } else {
+        $departureDay = new \DateTime(); // Prendre la date du jour si aucune date fournie
+    }
     //$energy = $request->query->get('energy');
     $price = $request->query->get('price');
     $availableSeats = $request->query->get('availableSeats');
     $duration = $request->query->get('duration');
 
 
+    // if ($departureDay) {
+    //     $departureDay = \DateTime::createFromFormat('d/m/Y', $departureDay);
+    //     if ($departureDay) {
+    //         $departureDay->setTime(0, 0, 0); // Met l'heure à minuit pour ignorer l'heure
+    //     }
+    // }
     if ($departureDay) {
         $departureDay = \DateTime::createFromFormat('d/m/Y', $departureDay);
         if ($departureDay) {
-            $departureDay->setTime(0, 0, 0); // Met l'heure à minuit pour ignorer l'heure
+            $departureDay->setTime(0, 0, 0); 
         }
     }
-    
- 
+    if ($availableSeats > 1){
+        $availableSeats = $availableSeats;
+        } else {
+        $availableSeats = 1;   
+    }
+
     $ridesQuery = $em->createQueryBuilder()
     ->select('r')
     ->from('App\Entity\Ride', 'r')
     ->where('r.departure = :departure')
     ->andWhere('r.destination = :destination')
-    ->andWhere('r.availableSeats >= 1')
-    ->andWhere('r.departureDay >= :departureDay')
+    // ->andWhere('r.availableSeats >= 1')
+    // ->andWhere('r.departureDay >= :departureDay')
     ->setParameter('departure', $departure)
-    ->setParameter('destination', $destination)
-    ->setParameter('departureDay', $departureDay);
+    ->setParameter('destination', $destination);
+    // ->setParameter('departureDay', $departureDay);
+   
+    
+    if ($departureDay) {  
+        if ($departureDay instanceof \DateTime) {
+            $formattedDate = $departureDay->format('Y-m-d');
+            $ridesQuery->andWhere('r.departureDay >= :departureDay')
+                    ->setParameter('departureDay', $formattedDate);
+        }
+    }
     if ($price) {
         $ridesQuery->andWhere('r.price <= :price')
                    ->setParameter('price', $price);
@@ -141,15 +173,18 @@ public function search(Request $request, RideRepository $rideRepository, EntityM
     // if ($departureDay) {
     //     $ridesQuery->setParameter('departureDay', $departureDay);
     // }
+  
 
-    $rides = $ridesQuery->getQuery()->getResult();
     
-
+    $rides = $ridesQuery->getQuery()->getResult();
+   
 
         return $this->render('ride/search_results.html.twig', [
             'form' => $form->createView(),
             'rides' => $rides,
         ]);
     }
+
+   
 
 }

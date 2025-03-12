@@ -6,6 +6,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\RideRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity()]
 class Ride
@@ -32,12 +34,12 @@ class Ride
     // #[ORM\Column(type: 'integer')]
     // #[Assert\NotBlank]
     // private int $duration;
-    #[ORM\Column(type: 'time', nullable: false)]
-    private ?\DateTime $duration = null;
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $duration = null;
 
 
-    #[ORM\Column(type: "integer")]
-    private $availableSeats;
+    #[ORM\Column(type: 'integer')]
+    private ?int $availableSeats = 0;
 
     #[ORM\ManyToOne(targetEntity: Vehicle::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -49,6 +51,14 @@ class Ride
 
     #[ORM\Column(type: 'time')]
     private ?\DateTimeInterface $departureTime = null;
+
+    // #[ORM\Column(type: 'string', length: 20, nullable: false)]
+    // private ?string $status = null;
+    #[ORM\Column(type: 'string', length: 20, nullable: false, options: ["default" => "pending"])]
+    private ?string $status = "pending"; 
+
+    #[ORM\OneToMany(mappedBy: "ride", targetEntity: Review::class, orphanRemoval: true)]
+    private Collection $reviews;
 
     public function getId(): ?int
     {
@@ -97,12 +107,12 @@ class Ride
     public function getDriver(): User { return $this->driver; }
     public function setDriver(User $driver): self { $this->driver = $driver; return $this; }
 
-    public function getDuration(): ?\DateTime
+    public function getDuration(): ?string
     {
         return $this->duration;
     }
 
-    public function setDuration(?\DateTime $duration): self
+    public function setDuration(?string $duration): self
     {
         $this->duration = $duration;
         return $this;
@@ -139,4 +149,35 @@ class Ride
 
         return $this;
     }
+
+    #[ORM\OneToMany(targetEntity: Booking::class, mappedBy: 'ride', cascade: ['remove'], orphanRemoval: true)]
+    private Collection $bookings;
+
+    public function __construct()
+    {
+        $this->bookings = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
+    }
+
+    public function getBookings(): Collection
+    {
+        return $this->bookings;
+    }
+    
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
+    }
+
 }

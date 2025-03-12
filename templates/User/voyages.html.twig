@@ -1,0 +1,100 @@
+{# {% extends 'base.html.twig' %}
+
+{% block title %}Mes Voyages{% endblock %}
+
+{% block body %}
+    <h1>Mes Voyages</h1>
+
+    <h2>Voyages à venir</h2>
+    {% if voyages_a_venir is not empty %}
+        <ul>
+            {% for voyage in voyages_a_venir %}
+                <li>{{ voyage.ride.destination }} à {{ voyage.ride.destination }} le {{ voyage.ride.departureday|date('d/m/Y') }}</li>
+                <li>effectué par : {{ voyage.user.pseudo }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun voyage à venir.</p>
+    {% endif %}
+
+    <h2>Voyages effectués</h2>
+    {% if voyages_passes is not empty %}
+        <ul>
+            {% for voyage in voyages_passes %}
+                <li>{{ voyage.ride.destination }} à {{ voyage.ride.destination }} le {{ voyage.ride.departureday|date('d/m/Y') }}</li>
+                <li>effectué par : {{ voyage.user.pseudo }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun voyage effectué.</p>
+    {% endif %}
+{% endblock %} #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Voyages{% endblock %}
+
+{% block body %}
+    <h1>Mes Voyages</h1>
+
+    <h2>Voyages à venir</h2>
+    {% if voyagesavenir|default([]) is not empty %}
+        <ul>
+            {% for voyage in voyagesavenir %}
+                <li>{{ voyage.ride.departure }} à {{ voyage.ride.destination }} le {{ voyage.ride.departureday|date('d/m/Y') }}</li>
+                <li>Effectué par : {{ voyage.ride.driver.pseudo }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun voyage à venir.</p>
+    {% endif %}
+
+    <h2>Voyages effectués</h2>
+    {% if voyagespasses|default([]) is not empty %}
+        <ul>
+            {% for voyage in voyagespasses %}
+                <li>
+                    {{ voyage.ride.departure }} à {{ voyage.ride.destination }} le {{ voyage.ride.departureday|date('d/m/Y') }}
+                    <br>Effectué par : {{ voyage.ride.driver.pseudo }}
+
+                    {% if voyage.ride.status == 'completed' %}
+                        {% set review = null %}
+                        {% for r in voyage.ride.reviews %}
+                            {% if r.passenger == app.user %}
+                                {% set review = r %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if review is not null %}
+                            <button disabled>Réponse déjà effectuée</button>
+                                                
+                        {% else %}
+                            <form action="{{ path('ride_review', {'id': voyage.ride.id}) }}" method="post">
+                                <label for="rating_{{ voyage.ride.id }}">Note (1 à 5) :</label>
+                                <select name="rating" id="rating_{{ voyage.ride.id }}">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+
+                                <br>
+
+                                <label for="comment_{{ voyage.ride.id }}">Votre avis :</label>
+                                <textarea name="comment" id="comment_{{ voyage.ride.id }}" rows="5"></textarea>
+
+                                <br>
+
+                                <button type="submit">Envoyer</button>
+                            </form>
+                        {% endif %}
+                    {# {% else %}
+                        <p><em>En attente de validation du trajet...</em></p> #}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun voyage effectué.</p>
+    {% endif %}
+{% endblock %}

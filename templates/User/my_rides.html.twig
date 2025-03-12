@@ -1,0 +1,95 @@
+{% for type, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ type }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+                
+<table>
+    <thead>
+        <tr>
+            <th>Trajet</th>
+            <th>Date du voyage</th>
+            <th>Passagers inscrits</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {# {% for ride in rides %}
+            <p>Trajet de {{ ride.departure }} à {{ ride.destination }} - Statut : {{ ride.status }}</p>
+        {% endfor %} #}
+
+        {% for ride in rides %}
+            <tr>
+                <td>{{ ride.departure }} → {{ ride.destination }}</td>
+                <td>{{ ride.departureDay|date('d/m/Y H:i') }}</td>
+                <td>
+                    <ul>
+                        {% if ride.bookings is not empty %}
+                            {% for booking in ride.bookings %}
+                                
+                                <li>{{ booking.user.pseudo }} ({{ booking.user.email }}) - {{ booking.seatsBooked }} places</li>
+                            {% endfor %}
+                        {% else %}
+                            <li>Aucun passager</li>
+                        {% endif %}
+                    </ul>
+                </td>
+                <td>
+                    <form method="post" action="{{ path('ride_cancel', {'id': ride.id}) }}">
+                        <button type="submit" class="btn btn-danger"  {% if ride.status == 'ongoing' or ride.status == 'completed' or ride.status == 'cancelled' %}disabled{% endif %}>Annuler</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" action="{{ path('ride_update_status', {'id': ride.id}) }}">
+                        {% if ride.status is null or ride.status == 'pending' %}
+                        {# {% if ride.departureDay >= "now"|date("Y-m-d")|date() %} #}
+                        {% if ride.departureDay|date("Y-m-d") > "now"|date("Y-m-d") %}
+                          
+                            <button class="btn btn-success" disabled title="Le voyage ne peut pas démarrer avant la date de départ">
+                                Démarrer
+                            </button>
+                        {% else %}
+                            <form method="post" action="{{ path('ride_start', {'id': ride.id}) }}">
+                                <input type="hidden" name="status" value="ongoing">
+                                <button type="submit" class="btn btn-success">
+                                    Démarrer
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% elseif ride.status == 'ongoing' %}
+                        <form method="post" action="{{ path('ride_complete', {'id': ride.id}) }}">
+                            <input type="hidden" name="status" value="completed">
+                            <button type="submit" class="btn btn-primary">Arrivée à destination</button>
+                        </form>
+                    {% else %}
+                        {% if ride.status == 'cancelled' %}
+                            <span class="text-muted">Trajet annulé</span>
+                        {% else %}
+                            <span class="text-muted">Trajet terminé</span>
+                        {% endif %}
+                    {% endif %}
+                    </form>
+                   
+                </td>
+                
+             
+                {# <td> #}
+                    {# {% if ride.status == 'pending' %} #}
+                        {# <form method="post" action="{{ path('ride_start', {'id': ride.id}) }}">
+                            <button type="submit" class="btn btn-success">Démarrer</button>
+                        </form> #}
+                       
+                    {# {% elseif ride.status == 'ongoing' %} #}
+                        {# <form method="post" action="{{ path('ride_complete', {'id': ride.id}) }}">
+                            <button type="submit" class="btn btn-primary">Arrivée à destination</button>
+                        </form> #}
+                    {# {% else %}
+                        <span class="text-muted">Trajet terminé</span> #}
+                    {# {% endif %} #}
+                {# </td> #}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

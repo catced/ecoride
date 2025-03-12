@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Validation des avis</h1>
+    {% for review in reviews %}
+        <p>{{ review.passenger.pseudo }} a laissé un avis : "{{ review.comment }}"</p>
+        <a href="{{ path('admin_review_validate', {'id': review.id}) }}">Valider</a>
+    {% endfor %}
+{% endblock %}

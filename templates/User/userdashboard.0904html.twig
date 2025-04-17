@@ -1,0 +1,406 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace utilisateur{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="col-md-6 ms-5">
+        <h1 class="mb-3">Bienvenue {{ app.user.name }} !</h1>
+
+        <p>Choisissez votre rôle :</p>
+        <form method="post" action="{{ path('set_role') }}">
+            <div class="d-flex gap-4">
+                <label>
+                    <input type="radio" name="choix" value="passager" {% if app.session.get('role') == 'passager' %}checked{% endif %}> Passager
+                </label>
+                <label>
+                    <input type="radio" name="choix" value="chauffeur" {% if app.session.get('role') == 'chauffeur' %}checked{% endif %}> Chauffeur
+                </label>
+                <label>
+                    <input type="radio" name="choix" value="chauffeur-passager" {% if app.session.get('role') == 'chauffeur-passager' %}checked{% endif %}> Chauffeur-Passager
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Enregistrer le rôle</button>
+        </form>
+
+        {% set role = app.session.get('role') %}
+
+        {% if role == 'passager' %}
+            <!-- Afficher les filtres et la recherche de trajets pour passager -->
+            <div id="filter-form" style="display: block;">
+                <h2 class="mt-4">Rechercher un trajet</h2>
+                <form method="get" action="{{ path('search_results') }}">
+                    {# <form method="get" action="{{ path('search_results', {'role': 'passager'}) }}"> #}
+                    <div class="mb-2 row">
+                        <label for="departure" class="col-md-4 col-form-label">Départ :</label>
+                        <div class="col-md-8">
+                            <input type="text" id="departure" name="departure" class="form-control">
+                        </div>
+                    </div>
+					  
+
+                    <div class="mb-2 row">
+                        <label for="destination" class="col-md-4 col-form-label">Destination :</label>
+                        <div class="col-md-8">
+                            <input type="text" id="destination" name="destination" class="form-control">
+                        </div>
+                    </div>
+					  
+
+                    {# <div class="mb-2 row">
+                        <label for="departureDay" class="col-md-4 col-form-label">Date :</label>
+                        <div class="col-md-8">
+                            <input type="date" id="departureDay" name="departureDay" class="form-control">
+                        </div>
+                    </div> #}
+
+                    <div class="mb-2 row">
+                        <label for="price" class="col-md-4 col-form-label">Prix max (â¬) :</label>
+                        <div class="col-md-8">
+                            <input type="number" id="price" name="price" value="{{ app.request.query.get('price') }}" min="0" step="1" class="form-control form-control-sm w-100">
+                        </div>
+                    </div>
+    
+                    <div class="mb-2 row">
+                        <label for="availableSeats" class="col-md-4 col-form-label">Places :</label>
+                        <div class="col-md-8">
+                            <input type="number" id="availableSeats" name="availableSeats" value="{{ app.request.query.get('availableSeats') }}" min="1" step="1" class="form-control form-control-sm w-100">
+                        </div>
+                    </div>
+    
+                    <div class="mb-2 row">
+                        <label for="duration" class="col-md-4 col-form-label">DurÃ©e :</label>
+                        <div class="col-md-8">
+                            <input type="time" id="duration" name="duration" value="{{ app.request.query.get('duration') }}" min="00:00" max="24:00" step="300" class="form-control form-control-sm w-100">
+                        </div>
+                    </div>
+    
+                    <div class="mb-2 form-check">
+                        <input type="checkbox" id="ecologique" name="ecologique" class="form-check-input" {% if app.request.query.get('ecologique') %} checked{% endif %}>
+                        <label class="form-check-label" for="ecologique">Ãcologique (vÃ©hicules Ã©lectriques uniquement)</label>
+                    </div>
+					  
+                                
+                    <button type="submit" class="btn btn-primary btn-sm w-100 mt-2">Rechercher</button>
+                </form>
+            </div>
+
+            <h2 class="mt-4">Vos voyages réservés</h2>
+            {% if ridesAsPassenger is defined and ridesAsPassenger is not empty %}													
+            
+                {% if ridesAsPassenger is empty %}
+                    <p>Vous n'avez pas encore réservé de trajets.</p>
+                {% else %}
+                    <ul>
+                        {% for ride in ridesAsPassenger %}
+                            <li>
+                                <strong>{{ ride.departure }} ? {{ ride.destination }}</strong> 
+                                le {{ ride.departureDay|date('d/m/Y') }} à {{ ride.departureTime|date('H:i') }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% else %}
+                <p>Vous n'avez pas encore réservé de trajets.</p>
+            {% endif %} 
+ 
+        {% elseif role == 'chauffeur' %}
+            <!-- Afficher les informations pour chauffeur -->
+			 <h2 class="mt-4">Vos voyages</h2>
+                {% if ridesAsDriver is defined and ridesAsDriver is empty %}
+                <p>Vous n'avez pas encore de trajets enregistrÃ©s.</p>
+                {% else %}
+                {# <h5>Vos 10 prochains trajets en tant que conducteur</h5>
+                    {% if ridesAsDriver is empty %}
+                        <p>Vous n'avez pas encore proposÃ© de trajets.</p>
+                    {% else %}
+                        <ul>
+                            {% for ride in ridesAsDriver %}
+                                <li>
+                                    <strong>{{ ride.departure }} - {{ ride.destination }}</strong> 
+                                    le {{ ride.departureDay|date('d/m/Y') }} départ à : {{ ride.departureTime|date('H:i') }} - nombre de places dispo : {{ ride.availableSeats }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endif %}																 #}
+                <h5>Vos 10 prochains trajets en tant que conducteur</h5>
+                {% if ridesAsDriver is empty %}
+                    <p>Vous n'avez pas encore propos� de trajets.</p>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped text-center">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Trajet</th>
+                                    <th>Date</th>
+                                    <th>Passagers</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ride in ridesAsDriver %}
+                                    <tr>
+                                        <td>{{ ride.departure }} ? {{ ride.destination }}</td>
+                                        <td>{{ ride.departureDay|date('d/m/Y') }} {{ ride.departureTime|date('H:i') }}</td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                {% if ride.bookings is not empty %}
+                                                    {% for booking in ride.bookings %}
+                                                        <li>?? {{ booking.user.pseudo }} ({{ booking.user.email }}) - {{ booking.seatsBooked }} places</li>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <li>Aucun passager</li>
+                                                {% endif %}
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            {% if ride.status == 'ongoing' %}
+                                                <span class="badge bg-warning text-dark">En cours</span>
+                                            {% elseif ride.status == 'completed' %}
+                                                <span class="badge bg-success">Termin�</span>
+                                            {% elseif ride.status == 'cancelled' %}
+                                                <span class="badge bg-danger">Annul�</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">En attente</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="d-flex justify-content-center gap-1 flex-wrap">
+                                                <form method="post" action="{{ path('ride_cancel', {'id': ride.id}) }}">
+                                                    <button type="submit" class="btn btn-sm btn-danger" {% if ride.status in ['ongoing', 'completed', 'cancelled'] %}disabled{% endif %}>
+                                                        ? Annuler
+                                                    </button>
+                                                </form>
+
+                                                {% if ride.status is null or ride.status == 'pending' %}
+                                                    {% if ride.departureDay|date("Y-m-d") > "now"|date("Y-m-d") %}
+                                                        <button class="btn btn-sm btn-success" disabled title="D�part impossible avant la date pr�vue">
+                                                            ?? D�marrer
+                                                        </button>
+                                                    {% else %}
+                                                        <form method="post" action="{{ path('ride_start', {'id': ride.id}) }}">
+                                                            <input type="hidden" name="status" value="ongoing">
+                                                            <button type="submit" class="btn btn-sm btn-success">
+                                                                ?? D�marrer
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                {% elseif ride.status == 'ongoing' %}
+                                                    <form method="post" action="{{ path('ride_complete', {'id': ride.id}) }}">
+                                                        <input type="hidden" name="status" value="completed">
+                                                        <button type="submit" class="btn btn-sm btn-primary">
+                                                            ?? Arriv�
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+
+			<h2 class="mt-4">Proposer un voyage</h2>
+            {% if vehicles is empty %}
+                <div class="alert alert-warning">
+                    <p>Vous devez enregistrer un véhicule avant de proposer un trajet.</p>
+                    <a href="{{ path('add_vehicle') }}" class="btn btn-info mt-2">Ajouter un véhicule</a>
+                </div>
+            {% else %}
+            {% if rideForm is not null %}
+                {{ form_start(rideForm) }}
+				<div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(rideForm.departure) }}</label>
+					<div class="col-md-8">
+                <!-- Formulaire pour proposer un trajet -->
+                {{ form_widget(rideForm.departure, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+				<div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(rideForm.destination) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(rideForm.destination, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                      
+                </div>
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(rideForm.departureDay) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(rideForm.departureDay, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(rideForm.departureTime) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(rideForm.departureTime, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(rideForm.price) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(rideForm.price, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(rideForm.duration) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(rideForm.duration, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(rideForm.vehicle) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(rideForm.vehicle, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success mt-3">Proposer le voyage</button>
+																							
+											  
+                
+
+                    {# <button type="submit" class="btn btn-success mt-3">Proposer le voyage</button> #}
+                    {{ form_end(rideForm) }}
+                {% endif %}
+            {% endif %}
+         
+                {# <h2 class="mt-4">Vos vÃ©hicules</h2>
+                {% if vehicles is empty %}
+                    <p>Vous n'avez pas encore enregistrÃ© de vÃ©hicule.</p>
+                {% else %}
+                    <ul>
+                        {% for vehicle in vehicles %}
+                            <li>{{ vehicle.brand }} - {{ vehicle.model }} - {{ vehicle.licensePlate }}</li>
+                        {% endfor %}
+                    </ul>
+               
+            {% endif %} #}
+						  
+
+            <h2 class="mt-4">Vos véhicules</h2>
+            {% if vehicles is empty %}
+                <p>Vous n'avez pas encore enregistré de véhicule.</p>
+            {% else %}
+                <ul>
+                    {% for vehicle in vehicles %}
+                        <li>{{ vehicle.brand }} - {{ vehicle.model }} - {{ vehicle.licensePlate }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <a href="{{ path('add_vehicle') }}" class="btn btn-info mt-3">Ajouter un véhicule</a>
+
+            {# <h2 class="mt-4">Vos trajets proposés</h2>
+            {% if ridesAsDriver is empty %}
+                <p>Vous n'avez pas encore proposé de trajets.</p>
+            {% else %}
+                <ul>
+                    {% for ride in ridesAsDriver %}
+                        <li>{{ ride.departure }} ? {{ ride.destination }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %} #}
+        {# {% elseif role == 'chauffeur-passager' %} #}
+            <!-- Afficher les deux sections (chauffeur et passager) -->
+            {# <p>Vous êtes à la fois chauffeur et passager.</p> #}
+            <!-- Ajoute ici les sections correspondant à chauffeur et passager -->
+        {% endif %}
+	  
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let filterForm = document.getElementById("filter-form");
+        let rideFormContainer = document.getElementById("ride-form-container");
+        let params = new URLSearchParams(window.location.search);
+        let role = "{{ role }}";
+        let passengerRides = document.getElementById("passenger-rides");
+        let choix = this.value; 
+
+		
+        if (role === "passager") {
+            filterForm.style.display = "block";
+            rideFormContainer.style.display = "none";
+            passengerRides.style.display = "block";
+        } else if (role === "chauffeur") {
+            filterForm.style.display = "none";
+            rideFormContainer.style.display = "block";
+            passengerRides.style.display = "none";
+        } else if (role === "chauffeur-passager") {
+            filterForm.style.display = "none";
+            rideFormContainer.style.display = "block";
+            passengerRides.style.display = "block";
+        }
+       
+        
+       // if (role === "passager") {
+        //    filterForm.style.display = "block";
+        //    rideFormContainer.style.display = "none";
+        //    passengerRides.style.display = "block"; // Afficher la liste des voyages réservés
+        //} else {
+        //    filterForm.style.display = "none";
+        //    rideFormContainer.style.display = "block";
+        //    passengerRides.style.display = "none"; // Cacher la liste si l'utilisateur change de rôle
+        //}
+        
+        //if (role === "chauffeur") {
+           
+        //    let chauffeurRadio = document.querySelector('input[name="choix"][value="chauffeur"]');
+        //    if (chauffeurRadio) {
+              
+        //        chauffeurRadio.checked = true;
+        //        chauffeurRadio.dispatchEvent(new Event("change")); // Simule un clic pour activer le JS existant
+        //    }
+        //}
+       
+
+        document.querySelectorAll('input[name="choix"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                    let choix = this.value; // Récupère la valeur sélectionnée
+                    let proposerVoyage = document.getElementById("ride-form-container");
+    
+                    // Affiche le formulaire de trajet si l'utilisateur est chauffeur
+                    proposerVoyage.style.display = (choix === "chauffeur" || choix === "chauffeur-passager") ? "block" : "none";
+    
+                    if (choix === "passager") {
+                        filterForm.style.display = "block";
+                        rideFormContainer.style.display = "none";
+                        passengerRides.style.display = "block";
+                    } else if (choix === "chauffeur" || choix === "chauffeur-passager") {
+                        filterForm.style.display = "none";
+                        rideFormContainer.style.display = "block";
+						
+                        passengerRides.style.display = "none";
+															 
+                    }
+
+                // Enregistre le choix via AJAX
+                fetch("{{ path('set_role') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: JSON.stringify({ role: this.value })
+                }).then(response => response.json())
+                  .then(data => {
+                     if (data.success ) {
+                        location.reload();
+                      //window.location.href = "{{ path('app_mes_voyages') }}";
+                      }
+                  });
+           
+            });
+        });
+    });
+</script>
+
+{% endblock %}

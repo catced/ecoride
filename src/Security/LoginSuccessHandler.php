@@ -52,9 +52,13 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
         }
 
         // Redirection vers la page d'accueil (ou une autre) si l'utilisateur n'est pas admin
-        if (in_array('ROLE_USER', $user->getRoles())) {
-            return new RedirectResponse($this->router->generate('membre_dashboard'));
+        if (in_array('ROLE_EMPLOYE', $user->getRoles())) {
+            return new RedirectResponse($this->router->generate('employe_dashboard'));
         }
-        return new RedirectResponse($this->router->generate('accueil'));
+
+        if (in_array('ROLE_USER', $user->getRoles())) {
+            return new RedirectResponse($this->router->generate('app_userdashboard'));
+        }
+        return new RedirectResponse($this->router->generate('app_home'));
     }
 }

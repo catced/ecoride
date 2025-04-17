@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\Vehicle;
+use App\Repository\RideRepository;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use App\Repository\VehicleRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -14,6 +17,8 @@ use App\Form\VehicleFormType; // Assurez-vous que cette classe existe bien
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Booking;
+use App\Form\RideFormType;
+use App\Entity\Ride;
 
 
 
@@ -35,24 +40,25 @@ class UserController extends AbstractController
 
     //     return $this->render('user/profile.html.twig');
     // }
-    #[Route('/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
-    {
-        $user = $this->getUser();
-
-        if ($user) {
-            if (in_array('ROLE_ADMIN', $user->getRoles())) {
-                return $this->redirectToRoute('admin_dashboard');
-            } else {
-                return $this->redirectToRoute('user_profile');
+        #[Route('/login', name: 'app_login')]
+        public function login(AuthenticationUtils $authenticationUtils): Response
+        {
+            $user = $this->getUser();
+        
+            if ($user) {
+                if (in_array('ROLE_ADMIN', $user->getRoles())) {
+                    return $this->redirectToRoute('admin');
+                } else {
+                    return $this->redirectToRoute('user_profile');
+                }
             }
-        }
+            
 
-        return $this->render('user/login.html.twig', [
-            'error' => $authenticationUtils->getLastAuthenticationError(),
-            'last_username' => $authenticationUtils->getLastUsername(),
-        ]);
-    }
+            return $this->render('user/login.html.twig', [
+                'error' => $authenticationUtils->getLastAuthenticationError(),
+                'last_username' => $authenticationUtils->getLastUsername(),
+            ]);
+        }
 
     // #[Route('/choix-role', name: 'user_role_choice')]
     // public function choixRole(Request $request, EntityManagerInterface $entityManager): Response
@@ -74,16 +80,18 @@ class UserController extends AbstractController
     // }
   
     #[Route('/set-role', name:'set_role')]   //, methods:{"POST"}
-    public function setRole(Request $request, SessionInterface $session):response
+    public function setRole(Request $request, SessionInterface $session, SessionInterface $session2):response
     {
         // Récupérer le rôle envoyé dans le formulaire
         $role = $request->request->get('role');
-        dump($role);
+        $choix = $request->request->get('choix');
+       
         // Sauvegarder le rôle dans la session
         $session->set('user_role', $role);
+        $session2->set('role', $choix);
 
         // Rediriger l'utilisateur après avoir sauvé le rôle
-        return $this->redirectToRoute('user_dashboard');
+        return $this->redirectToRoute('app_userdashboard');
     }
 
   
@@ -99,24 +107,72 @@ class UserController extends AbstractController
     // }
 
     #[Route('/user-dashboard', name:'user_dashboard')]
-    public function userDashboard(SessionInterface $session, FormFactoryInterface $formFactory, EntityManagerInterface $entityManager, Request $request)
+    public function userDashboard(SessionInterface $session, FormFactoryInterface $formFactory, EntityManagerInterface $entityManager, Request $request, VehicleRepository $vehicleRepository, RideRepository $rideRepository)
     {
-        $role = $session->get('user_role', 'passager');
+        $choix = $session->get('user_role', 'passager');
+        $user = $this->getUser();
+       
 
         // Création du formulaire (assurez-vous d'avoir un `VehicleType`)
         $vehicleForm = $formFactory->create(VehicleFormType::class);
         $vehicleForm->handleRequest($request);
+        $vehicles = $vehicleRepository->findBy(['owner' => $this->getUser()]);
 
-        if ($vehicleForm->isSubmitted() && $vehicleForm->isValid()) {
-            $vehicle = $vehicleForm->getData();
-            $entityManager->persist($vehicle);
-            $entityManager->flush();
+        $ride = new Ride();
+        $rideForm = $this->createForm(RideFormType::class, $ride);
+        
+        $rideForm = null;
+         if ($choix === 'chauffeur' || $choix === 'chauffeur-passager') {
+            $rideForm = $formFactory->create(RideFormType::class, null, ['vehicles' => $vehicles]);
+            $rideForm->handleRequest($request);
+    
+            if ($rideForm->isSubmitted() && $rideForm->isValid()) {
+                $ride = $rideForm->getData();
+                $ride->setDriver($user);
+    
+                $entityManager->persist($ride);
+                $entityManager->flush();
+    
+                $this->addFlash('success', 'Votre trajet a été créé avec succès.');
+    
+                return $this->redirectToRoute('user_dashboard');
+            }
+        //}
+
+            if ($vehicleForm->isSubmitted() && $vehicleForm->isValid()) {
+
+                $user = $this->getUser();
+
+                $vehicle = $vehicleForm->getData();
+                $vehicle->setOwner($user);
+                $vehicle = $vehicleForm->getData();
+                $entityManager->persist($vehicle);
+                $entityManager->flush();
+                $vehicleForm = $formFactory->create(VehicleFormType::class);
+            
+
+                // Récupère les trajets où l'utilisateur est conducteur
+            $ridesAsDriver = $rideRepository->findUpcomingRidesForDriver($user, 10) ?? [];
+            $ridesAsPassenger = $rideRepository->findUpcomingRidesForPassenger($user, 10) ?? [];
+
+            return $this->render('user/userdashboard.html.twig', [
+                'role' => $choix,
+                'vehicleForm' => $vehicleForm->createView(), // ?? On envoie le formulaire à Twig
+                'vehicles' => $vehicles,
+                'rideForm' => $rideForm ? $rideForm->createView() : null,
+                'ridesAsDriver' => $ridesAsDriver,
+                'ridesAsPassenger' => $ridesAsPassenger,
+            ]);
+            }
+
+            if ($choix === 'passenger') {
+                $role = $session->get('user_role', 'passager'); 
+                dd($role);
+                return $this->render('ride/search_results.html.twig', [
+                    'role' => $role,
+                ]);
+            }
         }
-
-        return $this->render('user/userdashboard.html.twig', [
-            'role' => $role,
-            'vehicleForm' => $vehicleForm->createView(), // ?? On envoie le formulaire à Twig
-        ]);
     }
 
     #[Route('/passager-dashboard', name:'passager_dashboard')]
@@ -139,5 +195,5 @@ class UserController extends AbstractController
         return $this->render('booking/user_bookings.html.twig', [
             'bookings' => $bookings,
         ]);
-}
+    }
 }

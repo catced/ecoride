@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Avis en attente de validation{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center text-primary">Avis en attente de validation</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle shadow-sm">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Utilisateur</th>
+                    <th scope="col">Avis</th>
+                    <th scope="col">Note</th>
+                    {# <th scope="col">Date</th> #}
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in reviewsToValidate %}
+                    <tr>
+                        <td>{{ review.passenger.pseudo }}</td>
+                        <td>{{ review.comment }}</td>
+                        <td>{{ review.rating }}/5</td>
+                        {# <td>{{ review.createdAt|date('d/m/Y H:i') }}</td> #}
+                        <td>
+                            <a href="{{ path('validate_review', {id: review.id}) }}" class="btn btn-success btn-sm me-2">
+                                <i class="fas fa-check"></i> Valider les avis
+                            </a>
+                            <a href="{{ path('delete_review', {id: review.id}) }}" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">Aucun avis en attente de validation</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

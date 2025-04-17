@@ -1,0 +1,69 @@
+
+
+<div id="filter-form" style="display: block;">
+    <h2 class="mt-4">Rechercher un trajet</h2>
+    <form method="get" action="{{ path('search_results') }}">
+        <div class="mb-2 row">
+            <label for="departure" class="col-md-4 col-form-label">Départ :</label>
+            <div class="col-md-8">
+                <input type="text" id="departure" name="departure" class="form-control">
+            </div>
+        </div>
+
+        <div class="mb-2 row">
+            <label for="destination" class="col-md-4 col-form-label">Destination :</label>
+            <div class="col-md-8">
+                <input type="text" id="destination" name="destination" class="form-control">
+            </div>
+        </div>
+
+        <div class="mb-2 row">
+            <label for="price" class="col-md-4 col-form-label">Prix max (€) :</label>
+            <div class="col-md-8">
+                <input type="number" id="price" name="price" value="{{ app.request.query.get('price') }}" min="0" step="1" class="form-control form-control-sm w-100">
+            </div>
+        </div>
+
+        <div class="mb-2 row">
+            <label for="availableSeats" class="col-md-4 col-form-label">Places :</label>
+            <div class="col-md-8">
+                <input type="number" id="availableSeats" name="availableSeats" value="{{ app.request.query.get('availableSeats') }}" min="1" step="1" class="form-control form-control-sm w-100">
+            </div>
+        </div>
+
+        <div class="mb-2 row">
+            <label for="duration" class="col-md-4 col-form-label">Durée :</label>
+            <div class="col-md-8">
+                <input type="time" id="duration" name="duration" value="{{ app.request.query.get('duration') }}" class="form-control form-control-sm w-100">
+            </div>
+        </div>
+
+        <div class="mb-2 form-check">
+            <input type="checkbox" id="ecologique" name="ecologique" class="form-check-input" {% if app.request.query.get('ecologique') %} checked{% endif %}>
+            <label class="form-check-label" for="ecologique">Écologique (véhicules électriques uniquement)</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-sm w-100 mt-2">Rechercher</button>
+    </form>
+</div>
+
+<div class="mt-3">
+    <a href="{{ path('app_mes_voyages') }}" class="btn btn-secondary btn-sm w-100">Voir mes réservations</a>
+</div>
+
+{# <h2 class="mt-4">Vos voyages réservés</h2>
+<div id="passenger-rides">
+    {% if ridesAsPassenger is defined and ridesAsPassenger is not empty %}
+        <ul>
+            {% for booking in ridesAsPassenger %}
+                <li>
+                    <strong>{{ booking.ride.departure }} → {{ booking.ride.destination }}</strong>
+                    le {{ booking.ride.departureDay|date('d/m/Y') }} à {{ booking.ride.departureTime|date('H:i') }}
+                </li>
+            {% endfor %}
+        </ul>
+        
+    {% else %}
+        <p>Vous n'avez pas encore réservé de trajets.</p>
+    {% endif %}
+</div> #}

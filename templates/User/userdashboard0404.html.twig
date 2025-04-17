@@ -1,0 +1,198 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace utilisateur{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="col-md-6 ms-5">
+        <h1 class="mb-3">Bienvenue {{ app.user.name }} !</h1>
+
+        <p>Choisissez votre rôle :</p>
+        <form method="post" action="{{ path('set_role') }}">
+            <div class="d-flex gap-4">
+                <label>
+                    <input type="radio" name="choix" value="passager" {% if app.session.get('role') == 'passager' %}checked{% endif %}> Passager
+                </label>
+                <label>
+                    <input type="radio" name="choix" value="chauffeur" {% if app.session.get('role') == 'chauffeur' %}checked{% endif %}> Chauffeur
+                </label>
+                <label>
+                    <input type="radio" name="choix" value="chauffeur-passager" {% if app.session.get('role') == 'chauffeur-passager' %}checked{% endif %}> Chauffeur-Passager
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Enregistrer le rôle</button>
+        </form>
+
+        {% set role = app.session.get('role') %}
+
+        {% if role == 'passager' %}
+            <!-- Afficher les filtres et la recherche de trajets pour passager -->
+            <div id="filter-form" style="display: block;">
+                <h2 class="mt-4">Rechercher un trajet</h2>
+                <form method="get" action="{{ path('search_results', {'role': 'passager'}) }}">
+                    <div class="mb-2 row">
+                        <label for="departure" class="col-md-4 col-form-label">Départ :</label>
+                        <div class="col-md-8">
+                            <input type="text" id="departure" name="departure" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-2 row">
+                        <label for="destination" class="col-md-4 col-form-label">Destination :</label>
+                        <div class="col-md-8">
+                            <input type="text" id="destination" name="destination" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-2 row">
+                        <label for="departureDay" class="col-md-4 col-form-label">Date :</label>
+                        <div class="col-md-8">
+                            <input type="date" id="departureDay" name="departureDay" class="form-control">
+                        </div>
+                    </div>
+                                
+                    <button type="submit" class="btn btn-primary btn-sm w-100 mt-2">Rechercher</button>
+                </form>
+            </div>
+
+            <h2 class="mt-4">Vos voyages réservés</h2>
+            {% if bookedRides is empty %}
+                <p>Vous n'avez pas encore réservé de trajets.</p>
+            {% else %}
+                <ul>
+                    {% for ride in bookedRides %}
+                        <li>
+                            <strong>{{ ride.departure }} ? {{ ride.destination }}</strong> 
+                            le {{ ride.departureDay|date('d/m/Y') }} à {{ ride.departureTime|date('H:i') }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+        {% elseif role == 'chauffeur' %}
+            <!-- Afficher les informations pour chauffeur -->
+            <h2 class="mt-4">Proposer un voyage</h2>
+            {% if rideForm is not null %}
+                {{ form_start(rideForm) }}
+                <!-- Formulaire pour proposer un trajet -->
+                {{ form_widget(rideForm) }}
+                <button type="submit" class="btn btn-success mt-3">Proposer le voyage</button>
+                {{ form_end(rideForm) }}
+            {% endif %}
+
+            <h2 class="mt-4">Vos véhicules</h2>
+            {% if vehicles is empty %}
+                <p>Vous n'avez pas encore enregistré de véhicule.</p>
+            {% else %}
+                <ul>
+                    {% for vehicle in vehicles %}
+                        <li>{{ vehicle.brand }} - {{ vehicle.model }} - {{ vehicle.licensePlate }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <a href="{{ path('add_vehicle') }}" class="btn btn-info mt-3">Ajouter un véhicule</a>
+
+            <h2 class="mt-4">Vos trajets proposés</h2>
+            {% if ridesAsDriver is empty %}
+                <p>Vous n'avez pas encore proposé de trajets.</p>
+            {% else %}
+                <ul>
+                    {% for ride in ridesAsDriver %}
+                        <li>{{ ride.departure }} ? {{ ride.destination }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% elseif role == 'chauffeur-passager' %}
+            <!-- Afficher les deux sections (chauffeur et passager) -->
+            <p>Vous êtes à la fois chauffeur et passager.</p>
+            <!-- Ajoute ici les sections correspondant à chauffeur et passager -->
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let filterForm = document.getElementById("filter-form");
+        let rideFormContainer = document.getElementById("ride-form-container");
+        let params = new URLSearchParams(window.location.search);
+        let role = "{{ role }}";
+        let passengerRides = document.getElementById("passenger-rides");
+        let choix = this.value; 
+
+        if (role === "passager") {
+            filterForm.style.display = "block";
+            rideFormContainer.style.display = "none";
+            passengerRides.style.display = "block";
+        } else if (role === "chauffeur") {
+            filterForm.style.display = "none";
+            rideFormContainer.style.display = "block";
+            passengerRides.style.display = "none";
+        } else if (role === "chauffeur-passager") {
+            filterForm.style.display = "none";
+            rideFormContainer.style.display = "block";
+            passengerRides.style.display = "block";
+        }
+       
+        
+       // if (role === "passager") {
+        //    filterForm.style.display = "block";
+        //    rideFormContainer.style.display = "none";
+        //    passengerRides.style.display = "block"; // Afficher la liste des voyages réservés
+        //} else {
+        //    filterForm.style.display = "none";
+        //    rideFormContainer.style.display = "block";
+        //    passengerRides.style.display = "none"; // Cacher la liste si l'utilisateur change de rôle
+        //}
+        
+        //if (role === "chauffeur") {
+           
+        //    let chauffeurRadio = document.querySelector('input[name="choix"][value="chauffeur"]');
+        //    if (chauffeurRadio) {
+              
+        //        chauffeurRadio.checked = true;
+        //        chauffeurRadio.dispatchEvent(new Event("change")); // Simule un clic pour activer le JS existant
+        //    }
+        //}
+       
+
+        document.querySelectorAll('input[name="choix"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                    let choix = this.value; // Récupère la valeur sélectionnée
+                    let proposerVoyage = document.getElementById("ride-form-container");
+    
+                    // Affiche le formulaire de trajet si l'utilisateur est chauffeur
+                    proposerVoyage.style.display = (choix === "chauffeur" || choix === "chauffeur-passager") ? "block" : "none";
+    
+                    if (choix === "passager") {
+                        filterForm.style.display = "block";
+                        rideFormContainer.style.display = "none";
+                        passengerRides.style.display = "block";
+                    } else if (choix === "chauffeur" || choix === "chauffeur-passager") {
+                        filterForm.style.display = "none";
+                        rideFormContainer.style.display = "block";
+                        passengerRides.style.display = "none";
+                    }
+
+                // Enregistre le choix via AJAX
+                fetch("{{ path('set_role') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: JSON.stringify({ role: this.value })
+                }).then(response => response.json())
+                  .then(data => {
+                     if (data.success ) {
+                        location.reload();
+                      //window.location.href = "{{ path('app_mes_voyages') }}";
+                      }
+                  });
+           
+            });
+        });
+    });
+</script>
+
+{% endblock %}

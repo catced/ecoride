@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Donner un avis{% endblock %}
+
+{% block body %}
+    <h1>Noter votre trajet</h1>
+    {{ form_start(form) }}
+        {{ form_row(form.rating) }}
+        {{ form_row(form.comment) }}
+        {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

@@ -1,34 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscription � une activité{% endblock %}
+{% block title %}Inscription à une activité{% endblock %}
 
 {% block stylesheets %}
-    {# <style>
-        .activite-form {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .activite-form .form-group {
-            margin-bottom: 15px;
-        }
-        .activite-form label {
-            font-weight: bold;
-        }
-        .activite-form .form-control {
-            width: 100%;
-        }
-    </style> #}
+   
 {% endblock %}
 
 {% block body %}
     <h1>Inscription à une activité</h1>
-    {# {{ form_start(form, {'attr': {'class': 'activite-form'}}) }}
-        {{ form_row(form.nom) }}
-        {{ form_row(form.description) }}
-        {{ form_row(form.date) }}
-       // <button type="submit">S'inscrire</button>
-       <button class="btn btn-primary">S'inscrire</button>
-    {{ form_end(form) }} #}
+   
     <div class="container mt-5">
       
         {{ form_start(form, {'attr': {'class': 'activite-form'}}) }}

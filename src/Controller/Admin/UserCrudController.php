@@ -10,6 +10,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class UserCrudController extends AbstractCrudController
 {
@@ -33,10 +34,11 @@ class UserCrudController extends AbstractCrudController
         }
 
         // Assigner automatiquement le rÃ´le ROLE_ADMIN Ã  l'utilisateur
-        $entityInstance->setRoles(['ROLE_ADMIN']);
+        $entityInstance->setRoles(['ROLE_USER']);
 
         // SÃ©curiser le mot de passe
         $plainPassword = $entityInstance->getPassword();
+        dd($plainPassword);
         if ($plainPassword) {
             $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
             $entityInstance->setPassword($hashedPassword);
@@ -49,10 +51,32 @@ class UserCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            TextField::new('username', 'Nom d\'utilisateur'),
-            TextField::new('password', 'Mot de passe')->onlyOnForms(),
+            TextField::new('name', 'Nom d\'utilisateur'),
+           // TextField::new('password', 'Mot de passe')->onlyOnForms(),
             // BooleanField::new('estactif', 'Est actif '),
-            TextField::new('email', 'Email')
+            TextField::new('pseudo', 'Pseudo'),
+            TextField::new('email', 'Email'),
+            BooleanField::new('issuspended','Suspendu')
+
         ];
+
+        $fields = [
+            // Autres champs de l'entité User
+            // Par exemple, pour l'email, le pseudo, etc.
+        ];
+    
+        // Vérifier si l'utilisateur est un ADMIN
+        if ($this->isGranted('ROLE_ADMIN')) {
+            // Ajouter la case à cocher pour suspendre l'utilisateur
+            $fields[] = BooleanField::new('isSuspended', 'Suspendu')
+                ->setHelp('Cochez cette case pour suspendre l\'utilisateur');
+        } else {
+            // Si l'utilisateur n'est pas ADMIN, ne pas afficher le champ 'isSuspended'
+            $fields[] = BooleanField::new('isSuspended', 'Suspendu')->onlyOnDetail(); // Affiche juste en lecture seule
+        }
+    
+        return $fields;
     }
+
+    
 }

@@ -60,7 +60,7 @@ class VehicleFormType extends AbstractType
     //     'entry_options' =>['attr'=>['class' => 'custom-preference']]
     // ])
    
-    ->add('save', SubmitType::class, ['label' => 'Sauvegarder le véhicule'])
+    //->add('save', SubmitType::class, ['label' => 'Sauvegarder le véhicule'])
     ;
     }
 

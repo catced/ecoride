@@ -26,34 +26,16 @@ class RegistrationController extends AbstractController
     
         $form->handleRequest($request);
 
-        // if ($form->isSubmitted()) {
-        //     dump($form->isValid());
-        //     dump($form->getErrors(true));
-        // }
-        // dump($form->getData());
         if ($form->isSubmitted() && $form->isValid()) {    //$form->isSubmitted() &&
-            // ); 
-            // dump($form->getData());
-                       // Vérifier si l'email existe déjà
-            // $existingUser = $userRepository->findOneBy(['email' => $user->getEmail()]);
-            // if ($existingUser) {
-            //     $this->addFlash('error', 'Un compte existe déjà avec cette adresse email.');
-            //     return $this->redirectToRoute('app_register');
-            // }
-            // $user->setPlainPassword($form->get('plainPassword')->getData());
-
-            // $user->setPassword(
-            //     $passwordHasher->hashPassword(
-            //         $user,
-            //         $user->getPlainPassword()
-            //     )
-            // );
-          //  dump($form->getData());
-            // Hachage du mot de passe
-          
+                      
             $user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
             $plainPassword = $form->get('plainPassword')->getData();
-            // dump($plainPassword);
+
+            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $plainPassword)) {
+                $this->addFlash('danger', 'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial.');
+                return $this->redirectToRoute('app_login');
+            }
+
             if (!empty($plainPassword)) { // Vérifie si un mot de passe a été saisi
               
                 $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
@@ -88,6 +70,8 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+
+       
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);

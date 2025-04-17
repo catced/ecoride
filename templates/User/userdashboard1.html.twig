@@ -1,0 +1,307 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace utilisateur{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="col-md-6 ms-5">
+        <h1 class="mb-3">Bienvenue {{ app.user.name }} !</h1>
+
+        <p>Choisissez votre rôle :</p>
+        <form method="post" action="{{ path('set_role') }}">
+            <div class="d-flex gap-4">
+                <label>
+                    <input type="radio" name="choix" value="passager" > Passager
+                </label>
+                <label>
+                    <input type="radio" name="choix" value="chauffeur"> Chauffeur
+                </label>
+                <label>
+                    <input type="radio" name="choix" value="chauffeur-passager"> Chauffeur-Passager
+                </label>
+            </div>
+        </form> 
+
+        {# Formulaire de recherche #}
+        <div id="filter-form" style="display: none;">
+            <h2 class="mt-4">Rechercher un trajet</h2>
+            <form method="get" action="{{ path('search_results', {'role': 'passager'}) }}">
+                <div class="mb-2 row">
+                    <label for="departure" class="col-md-4 col-form-label">Départ :</label>
+                    <div class="col-md-8">
+                        <input type="text" id="departure" name="departure" class="form-control">
+                    </div>
+                </div>
+
+                <div class="mb-2 row">
+                    <label for="destination" class="col-md-4 col-form-label">Destination :</label>
+                    <div class="col-md-8">
+                        <input type="text" id="destination" name="destination" class="form-control">
+                    </div>
+                </div>
+
+                <div class="mb-2 row">
+                    <label for="departureDay" class="col-md-4 col-form-label">Date :</label>
+                    <div class="col-md-8">
+                        <input type="date" id="departureDay" name="departureDay" class="form-control">
+                    </div>
+                </div>
+                                
+                <button type="submit" class="btn btn-primary btn-sm w-100 mt-2">Rechercher</button>
+            </form>
+        </div>
+
+        {# <div id="passenger-rides" style="display: none;">
+            <h2 class="mt-4">Vos voyages réservés</h2>
+            {% if bookedRides is empty %}
+                <p>Vous n'avez pas encore réservé de trajets.</p>
+            {% else %}
+                <ul>
+                    {% for ride in bookedRides %}
+                        <li>
+                            <strong>{{ ride.departure }} → {{ ride.destination }}</strong> 
+                            le {{ ride.departureDay|date('d/m/Y') }} à {{ ride.departureTime|date('H:i') }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div> #}
+
+        {# Formulaire "Proposer un voyage" #}
+    
+        <div id="ride-form-container" style="display: none;">
+            
+           
+            {# {% if choix == "chauffeur" %} #}
+            <h2 class="mt-4">Vos voyages</h2>
+                {% if ridesAsDriver is defined and ridesAsDriver is empty %}
+                <p>Vous n'avez pas encore de trajets enregistrés.</p>
+                {% else %}
+                <h5>Vos 10 prochains trajets en tant que conducteur</h5>
+                    {% if ridesAsDriver is empty %}
+                        <p>Vous n'avez pas encore proposé de trajets.</p>
+                    {% else %}
+                        <ul>
+                            {% for ride in ridesAsDriver %}
+                                <li>
+                                    <strong>{{ ride.departure }} → {{ ride.destination }}</strong> 
+                                    le {{ ride.departureDay|date('d/m/Y') }} à {{ ride.departureTime|date('H:i') }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+                <h2 class="mt-4">Proposer un voyage</h2>
+                {% if rideForm is not null %}  {#  {% if app.user and rideForm is defined %} #}
+                    {{ form_start(rideForm) }}
+                    <div class="mb-2 row">
+                        <label class="col-md-4">{{ form_label(rideForm.departure) }}</label>
+                        <div class="col-md-8">
+                            {{ form_widget(rideForm.departure, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-2 row">
+                        <label class="col-md-4">{{ form_label(rideForm.destination) }}</label>
+                        <div class="col-md-8">
+                            {{ form_widget(rideForm.destination, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-2 row">
+                        <label class="col-md-4">{{ form_label(rideForm.departureDay) }}</label>
+                        <div class="col-md-8">
+                            {{ form_widget(rideForm.departureDay, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-2 row">
+                        <label class="col-md-4">{{ form_label(rideForm.departureTime) }}</label>
+                        <div class="col-md-8">
+                            {{ form_widget(rideForm.departureTime, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-2 row">
+                        <label class="col-md-4">{{ form_label(rideForm.price) }}</label>
+                        <div class="col-md-8">
+                            {{ form_widget(rideForm.price, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-2 row">
+                        <label class="col-md-4">{{ form_label(rideForm.duration) }}</label>
+                        <div class="col-md-8">
+                            {{ form_widget(rideForm.duration, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-2 row">
+                        <label class="col-md-4">{{ form_label(rideForm.vehicle) }}</label>
+                        <div class="col-md-8">
+                            {{ form_widget(rideForm.vehicle, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success mt-3">Proposer le voyage</button>
+                    {{ form_end(rideForm) }}
+                {% endif %}
+
+         
+                <h2 class="mt-4">Vos véhicules</h2>
+                {% if vehicles is empty %}
+                    <p>Vous n'avez pas encore enregistré de véhicule.</p>
+                {% else %}
+                    <ul>
+                        {% for vehicle in vehicles %}
+                            <li>{{ vehicle.brand }} - {{ vehicle.model }} - {{ vehicle.licensePlate }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+       
+    
+           
+                {# <h3>Informations du véhicule</h3>
+                {{ form_start(vehicleForm) }}
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(vehicleForm.brand) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(vehicleForm.brand, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(vehicleForm.model) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(vehicleForm.model, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(vehicleForm.licensePlate) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(vehicleForm.licensePlate, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(vehicleForm.color) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(vehicleForm.color, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(vehicleForm.seatscount) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(vehicleForm.seatscount, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(vehicleForm.energy) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(vehicleForm.energy, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(vehicleForm.dateFirstUse) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(vehicleForm.dateFirstUse, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(vehicleForm.preferences) }}</label>
+                    <div class="col-md-8">
+                        {% for choice in vehicleForm.preferences %}
+                        <div class="form-check">
+                            {{ form_widget(choice, {'attr': {'class': 'form-check-input me-2'}}) }}
+                            <label class="form-check-label">{{ choice.vars.label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+    
+                <button type="submit" class="btn btn-info mt-3">Enregistrer le véhicule</button>
+                {{ form_end(vehicleForm) }}
+           #}
+                <a href="{{ path('add_vehicle') }}" class="btn btn-info mt-3">Ajouter un véhicule</a>    
+            {# {% endif %} #}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let filterForm = document.getElementById("filter-form");
+        let rideFormContainer = document.getElementById("ride-form-container");
+        let params = new URLSearchParams(window.location.search);
+        let role = params.get("role");
+        let passengerRides = document.getElementById("passenger-rides");
+        let choix = this.value; 
+       
+        
+        if (choix === "passager") {
+            filterForm.style.display = "block";
+            rideFormContainer.style.display = "none";
+            passengerRides.style.display = "block"; // Afficher la liste des voyages réservés
+        } else {
+            filterForm.style.display = "none";
+            rideFormContainer.style.display = "block";
+            passengerRides.style.display = "none"; // Cacher la liste si l'utilisateur change de rôle
+        }
+        
+        if (choix === "chauffeur") {
+           
+            let chauffeurRadio = document.querySelector('input[name="choix"][value="chauffeur"]');
+            if (chauffeurRadio) {
+              
+                chauffeurRadio.checked = true;
+                chauffeurRadio.dispatchEvent(new Event("change")); // Simule un clic pour activer le JS existant
+            }
+        }
+       
+
+        document.querySelectorAll('input[name="choix"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                    let choix = this.value; // Récupère la valeur sélectionnée
+                    let proposerVoyage = document.getElementById("ride-form-container");
+    
+                    // Affiche le formulaire de trajet si l'utilisateur est chauffeur
+                    proposerVoyage.style.display = (choix === "chauffeur" || choix === "chauffeur-passager") ? "block" : "none";
+    
+               if (this.value === "passager") {
+                   filterForm.style.display = "block";
+                    rideFormContainer.style.display = "none";
+                } else if (this.value === "chauffeur" || this.value === "chauffeur-passager") {
+                    filterForm.style.display = "none";
+                    rideFormContainer.style.display = "block";
+                } else {
+                    filterForm.style.display = "none";
+                    rideFormContainer.style.display = "none";
+                }
+
+                // Enregistre le choix via AJAX
+                fetch("{{ path('set_role') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: JSON.stringify({ role: this.value })
+                }).then(response => response.json())
+                  .then(data => {
+                     if (data.success ) {
+                        location.reload();
+                      //window.location.href = "{{ path('app_mes_voyages') }}";
+                      }
+                  });
+           
+            });
+        });
+    });
+</script>
+
+{% endblock %}

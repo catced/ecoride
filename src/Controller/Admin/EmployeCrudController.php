@@ -9,12 +9,25 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use Vich\UploaderBundle\Form\Type\VichFileType;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use Symfony\Component\HttpFoundation\File\File; 
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 class EmployeCrudController extends AbstractCrudController
 {
+    private $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
     public static function getEntityFqcn(): string
     {
         return Employe::class;
@@ -28,11 +41,58 @@ class EmployeCrudController extends AbstractCrudController
             IdField::new('Id')->hideOnForm(),
             TextField::new('email', 'Email'),
             TextField::new('password', 'Mot de passe')->onlyOnForms(),
-            TextField::new('pseudo', 'Pseudo')
-             
+            TextField::new('pseudo', 'Pseudo'),
+           // ArrayField::new('roles', 'Rôles')
             ];
 
         
     }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if (!$entityInstance instanceof Employe) {
+            return;
+        }
+        // Récupérer le mot de passe en clair
+        $plainPassword = $entityInstance->getPassword();
+        $entityInstance->setRoles(['ROLE_EMPLOYE']);
+
+        // Vérifier si un mot de passe a été fourni
+        if ($plainPassword) {
+            // Hacher le mot de passe
+            $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
+            // Assigner le mot de passe haché à l'entité
+            $entityInstance->setPassword($hashedPassword);
+        }
+ 
+        // // Assurer que l'employé n'a que ROLE_EMPLOYE lors de la création
+        // $entityInstance->setRoles(['ROLE_EMPLOYE']);
+
+        // $password = $entityInstance->getPassword();
+        // if ($password) {
+        //     $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $password);
+        //     $entityInstance->setPassword($hashedPassword);
+        // }
     
+        parent::persistEntity($entityManager, $entityInstance);
+    }
+     
+
+   
+
+       
+    // public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    // {
+    //     if (!$entityInstance instanceof Employe) {
+    //         return;
+    //     }
+
+    //     $roles = $entityInstance->getRoles();
+    //     if (!in_array('ROLE_EMPLOYE', $roles)) {
+    //         $roles[] = 'ROLE_EMPLOYE';
+    //         $entityInstance->setRoles($roles);
+    //     }
+
+    //     parent::updateEntity($entityManager, $entityInstance);
+    // }
 }

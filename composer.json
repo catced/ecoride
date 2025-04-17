@@ -36,6 +36,7 @@
         "symfony/property-info": "7.2.*",
         "symfony/runtime": "7.2.*",
         "symfony/security-bundle": "7.2.*",
+        "symfony/security-core": "7.2.*",
         "symfony/serializer": "7.2.*",
         "symfony/stimulus-bundle": "^2.22",
         "symfony/string": "7.2.*",
@@ -101,6 +102,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.1",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "7.2.*",
         "symfony/css-selector": "7.2.*",

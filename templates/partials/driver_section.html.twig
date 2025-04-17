@@ -1,0 +1,138 @@
+{# templates/partials/_driver.html.twig #}
+
+<h2 class="mt-4">Vos voyages</h2>
+
+{% if ridesAsDriver is defined and ridesAsDriver is empty %}
+    <p>Vous n'avez pas encore proposé de trajets.</p>
+{% else %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Trajet</th>
+                    <th>Date</th>
+                    <th>Places disponibles</th>
+                    <th>Passagers</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ride in ridesAsDriver %}
+                    <tr>
+                        <td>{{ ride.departure }} → {{ ride.destination }}</td>
+                        <td>{{ ride.departureDay|date('d/m/Y') }} {{ ride.departureTime|date('H:i') }}</td>
+                        <td>{{ ride.availableseats }} </td>
+                        <td>
+                            <ul class="list-unstyled">
+                                {% if ride.bookings is not empty %}
+                                    {% for booking in ride.bookings %}
+                                        <li>👤 {{ booking.user.pseudo }} ({{ booking.user.email }}) - {{ booking.seatsBooked }} places</li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li>Aucun passager</li>
+                                {% endif %}
+                            </ul>
+                        </td>
+                        <td>
+                            {% if ride.status == 'ongoing' %}
+                                <span class="badge bg-warning text-dark">En cours</span>
+                            {% elseif ride.status == 'completed' %}
+                                <span class="badge bg-success">Terminé</span>
+                            {% elseif ride.status == 'cancelled' %}
+                                <span class="badge bg-danger">Annulé</span>
+                            {% else %}
+                                <span class="badge bg-secondary">En attente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-1 flex-wrap">
+                                <form method="post" action="{{ path('ride_cancel', {'id': ride.id}) }}">
+                                    <button type="submit" class="btn btn-sm btn-danger" {% if ride.status in ['ongoing', 'completed', 'cancelled'] %}disabled{% endif %}>
+                                        ❌ Annuler
+                                    </button>
+                                </form>
+
+                                {% if ride.status is null or ride.status == 'pending' %}
+                                    {% if ride.departureDay|date("Y-m-d") > "now"|date("Y-m-d") %}
+                                        <button class="btn btn-sm btn-success" disabled title="Départ impossible avant la date prévue">
+                                            🚀 Démarrer
+                                        </button>
+                                    {% else %}
+                                        <form method="post" action="{{ path('ride_start', {'id': ride.id}) }}">
+                                            <input type="hidden" name="status" value="ongoing">
+                                            <button type="submit" class="btn btn-sm btn-success">
+                                                🚀 Démarrer
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% elseif ride.status == 'ongoing' %}
+                                    <form method="post" action="{{ path('ride_complete', {'id': ride.id}) }}">
+                                        <input type="hidden" name="status" value="completed">
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            🎯 Arrivé
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+
+<h2 class="mt-4">Proposer un voyage</h2>
+<div id="ride-form-container">
+    {% if vehicles is empty %}
+        <div class="alert alert-warning">
+            <p>Vous devez enregistrer un véhicule avant de proposer un trajet.</p>
+            <a href="{{ path('add_vehicle') }}" class="btn btn-info mt-2">Ajouter un véhicule</a>
+        </div>
+    {% elseif rideForm is not null %}
+        {{ form_start(rideForm) }}
+        <div class="mb-2 row">
+            <label class="col-md-4">{{ form_label(rideForm.departure) }}</label>
+            <div class="col-md-8">{{ form_widget(rideForm.departure, {'attr': {'class': 'form-control'}}) }}</div>
+        </div>
+        <div class="mb-2 row">
+            <label class="col-md-4">{{ form_label(rideForm.destination) }}</label>
+            <div class="col-md-8">{{ form_widget(rideForm.destination, {'attr': {'class': 'form-control'}}) }}</div>
+        </div>
+        <div class="mb-2 row">
+            <label class="col-md-4">{{ form_label(rideForm.departureDay) }}</label>
+            <div class="col-md-8">{{ form_widget(rideForm.departureDay, {'attr': {'class': 'form-control'}}) }}</div>
+        </div>
+        <div class="mb-2 row">
+            <label class="col-md-4">{{ form_label(rideForm.departureTime) }}</label>
+            <div class="col-md-8">{{ form_widget(rideForm.departureTime, {'attr': {'class': 'form-control'}}) }}</div>
+        </div>
+        <div class="mb-2 row">
+            <label class="col-md-4">{{ form_label(rideForm.price) }}</label>
+            <div class="col-md-8">{{ form_widget(rideForm.price, {'attr': {'class': 'form-control'}}) }}</div>
+        </div>
+        <div class="mb-2 row">
+            <label class="col-md-4">{{ form_label(rideForm.duration) }}</label>
+            <div class="col-md-8">{{ form_widget(rideForm.duration, {'attr': {'class': 'form-control'}}) }}</div>
+        </div>
+        <div class="mb-2 row">
+            <label class="col-md-4">{{ form_label(rideForm.vehicle) }}</label>
+            <div class="col-md-8">{{ form_widget(rideForm.vehicle, {'attr': {'class': 'form-control'}}) }}</div>
+        </div>
+        <button type="submit" class="btn btn-success mt-3">Proposer le voyage</button>
+        {{ form_end(rideForm) }}
+    {% endif %}
+</div>
+
+<h2 class="mt-4">Vos véhicules</h2>
+{% if vehicles is empty %}
+    <p>Vous n'avez pas encore enregistré de véhicule.</p>
+{% else %}
+    <ul>
+        {% for vehicle in vehicles %}
+            <li>{{ vehicle.brand }} - {{ vehicle.model }} - {{ vehicle.licensePlate }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+<a href="{{ path('add_vehicle') }}" class="btn btn-info mt-3">Ajouter un véhicule</a>

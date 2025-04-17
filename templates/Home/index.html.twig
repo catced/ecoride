@@ -1,4 +1,5 @@
-    {% extends 'base.html.twig' %}
+{% extends 'base.html.twig' %}
+
 
     {% block title %}Accueil - Covoiturage{% endblock %}
 
@@ -9,49 +10,54 @@
     {% endblock %} #}
 
     {% block body %}
-    <div class="container text-center mt-5">
+    {# <img src="{{ asset('images/covoiturage.jpg') }}" alt="Voiture avec passagers" height="300px"  class="header-image"> #}
+    <div class="body">
+    <div class="container text-center mt-5 ">
         <h1>Bienvenue chez EcoRide</h1>
-        <p>Votre solution idéale pour trouver et planifier vos itinéraires en toute simplicité.</p>
-        <p>Notre startup française a pour objectif de réduire l'impact environnemtanl des déplacements</p>
+        <p>Votre solution idéale pour trouver et planifier vos itinÃ©raires en toute simplicitÃ©.</p>
+        <p>Notre startup franÃ§aise a pour objectif de rÃ©duire l'impact environnemtanl des dÃ©placements</p>
         <p>en favorisant le covoiturage.</p>
 
         <p>Nous avons pour objectif de devenir la principale plateforme de covoiturage pour les voyageurs</p>
-        <p>soucieux de l'environnement et ceux qui recherchent une solution économique pour leurs déplacements.</p>
+        <p>soucieux de l'environnement et ceux qui recherchent une solution Ã©conomique pour leurs dÃ©placements.</p>
 
         <!-- Barre de recherche -->
-        <div class="search-bar mt-4">
-            {# <form action="{{ path('search_routes') }}" method="GET">
-                <input type="text" name="query" class="form-control" placeholder="Rechercher un itinéraire...">
-                <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
-            </form> #}
-            {# <form action="{{ path('search_results') }}" method="GET" >
-                <div class="form-group">
-                    <label for="departure">Point de départ</label>
-                    <input type="text" id="departure" name="departure" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="destination">Destination</label>
-                    <input type="text" id="destination" name="destination" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="date">Date</label>
-                    <input type="date" id="date" name="date" class="form-control">
-                </div>
-                
-                <button type="submit" class="btn btn-primary">Rechercher</button>
-            </form>
+        <br>
+              
+        <h2>Rechercher un voyage</h2>
+            <div class="container text-center">
+                <form action="{{ path('search_results') }}" method="GET" class="row justify-content-center">
+                    <div class="col-6 col-md-4">
+                        <div class="form-group">
+                            <label for="departure">Point de départ</label>
+                            <input type="text" id="departure" name="departure" class="form-control form-control-sm" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6 col-md-4">
+                        <div class="form-group">
+                            <label for="destination">Destination</label>
+                            <input type="text" id="destination" name="destination" class="form-control form-control-sm" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6 col-md-4">
+                        <div class="form-group">
+                            <label for="date">Date</label>
+                            <input type="date" id="date" name="date" class="form-control form-control-sm">
+                        </div>
+                    </div>
+            
+                    <div class="col-6 col-md-4">
+                        <button type="submit" class="btn btn-primary btn-sm w-100 mt-2">Rechercher</button>
+                    </div>
+                </form>
+            </div>
+            
         </div>
-
-        <input type="text" id="search" placeholder="Rechercher un itinéraire...">
-        <div id="results"></div> #}
+        {# <input type="text" id="search" placeholder="Rechercher un itinÃ©raire..."> #}
+        <div id="results"></div>
     </div>
-
-    <!-- Pied de page -->
-    <footer class="text-center mt-5 p-3 bg-light">
-        <p>Contactez-nous : <a href="mailto:contact@gmailcom">contact@gmail.com</a></p>
-        {# <p><a href="{{ path('legal_mentions') }}">Mentions légales</a></p> #}
-    </footer>
-{% endblock %}
-
+    
+    {% endblock %}
+   

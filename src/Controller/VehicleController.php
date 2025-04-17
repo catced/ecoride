@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 class VehicleController extends AbstractController
 {
-#[Route('/ajouter-vehicule', name: 'ajouter_vehicule')]
+#[Route('/add-vehicle', name: 'add_vehicle')]
 public function ajouterVehicule(Request $request, EntityManagerInterface $entityManager): Response
 {
     $vehicle = new Vehicle();
@@ -41,12 +41,13 @@ public function ajouterVehicule(Request $request, EntityManagerInterface $entity
         $entityManager->persist($vehicle);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_userdashboard');
+        return $this->redirectToRoute('app_userdashboard', ['role' => 'chauffeur']);
     }
 
-    return $this->render('vehicle/ajouter.html.twig', [
+    return $this->render('vehicle/add_vehicle.html.twig', [
         'form' => $form->createView(),
     ]);
+  
 }
 
 

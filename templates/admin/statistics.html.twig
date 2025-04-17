@@ -1,0 +1,196 @@
+{% extends 'base.html.twig' %}
+{# {% block head %}<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>{% endblock %} #}
+
+{% block title %}Statistiques Admin{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Statistiques des Trajets et Réservations</h1>
+
+        <div>
+
+        <h2>Trajets par jour</h2>
+        <ul>
+                            {# {% for ride in rides_by_day %}
+                                <li>{{ ride.departureday }} - {{ ride.count }} trajets</li>
+                            {% endfor %} #}
+            {# {% for data in ridesdata %} #}
+                              {# <p>Date: {{ data.date }} - Nombre de trajets: {{ data.count }}</p> #}
+            {# <li>Date: {{ data.day|date('Y-m-d') }}  - Nombre de trajets: {{ data.ride_count }}</li> #}
+            {# {% endfor %} #}
+        </ul>
+        
+        <canvas id="ridesChart" width="600" height="300"></canvas>
+
+        <h2>Récapitulatif des trajets par jour de la semaine</h2>
+        <style>
+            canvas {
+                max-width: 600px; /* Largeur maximale */
+                max-height: 300px; /* Hauteur maximale */
+                width: 100%; /* S'adapte Ã  la taille du conteneur */
+                height: auto;
+            }
+        </style>
+        <canvas id="weeklyRidesChart" width="600" height="300"></canvas>
+
+        <h2>Réservations par jour</h2>
+        {# <ul> #}
+            {# {% for booking in bookingsbyday %} #}
+                                  {# <li>{{ booking.createdat|date('Y-m-d') }} - {{ booking.count }} rÃ©servations</li> #}
+                {# <li>Date: {{ booking.day|date('Y-m-d') }} - Nombre de rÃ©servations: {{ booking.booking_count }}</li> #}
+            {# {% endfor %} #}
+        {# </ul> #}
+        <canvas id="bookingsChart" width="600" height="300"></canvas>
+        </div>
+
+        <div>
+        <h2>Total des Crédits gagnés : <strong style="font-size: 2em; color: #007bff;">{{ totalCredits }}</strong> crédits
+        </h2>
+
+        <h2>Crédits par jour</h2>
+        <canvas id="creditsByDayChart" width="600" height="300"></canvas>
+        </div>
+
+        <style>
+            canvas {
+                max-width: 600px; /* Largeur maximale */
+                max-height: 300px; /* Hauteur maximale */
+                width: 100%; /* S'adapte Ã  la taille du conteneur */
+                height: auto;
+            }
+        </style>
+      
+    </div>
+
+        {# npm install chart.js #}
+        {# <pre>{{ ridesdata|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre> #}
+        {# <pre>{{ dump(ridesdata) }}</pre> #}
+
+        <script defer>
+            document.addEventListener("DOMContentLoaded", function () {
+                // RÃ©cupÃ©rer les donnÃ©es de Twig et les transformer en JSON
+                const ridesData = {{ ridesdata|json_encode|raw }};
+                const bookingsData = {{ bookingsbyday|json_encode|raw }};
+                const creditsByDay = {{ creditsByDay|json_encode|raw }};
+        
+               // console.log("Rides Data:", ridesData);
+               // console.log("Bookings Data:", bookingsData);
+        
+                // Transformer les donnÃ©es pour Chart.js
+                const rideLabels = ridesData.map(data => data.day);
+                const rideCounts = ridesData.map(data => data.ride_count);
+        
+                const bookingLabels = bookingsData.map(data => data.day);
+                const bookingCounts = bookingsData.map(data => data.booking_count);
+
+                const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+                const creditsByDayValues = [
+                    creditsByDay.Monday,
+                    creditsByDay.Tuesday,
+                    creditsByDay.Wednesday,
+                    creditsByDay.Thursday,
+                    creditsByDay.Friday,
+                    creditsByDay.Saturday,
+                    creditsByDay.Sunday
+                ];
+        
+            //    console.log("Ride Labels:", rideLabels);
+            //    console.log("Ride Counts:", rideCounts);
+            //    console.log("Booking Labels:", bookingLabels);
+            //    console.log("Booking Counts:", bookingCounts);
+        
+                // VÃ©rifier si les Ã©lÃ©ments canvas existent avant de crÃ©er les graphiques
+                const ctxRides = document.getElementById('ridesChart');
+                if (ctxRides) {
+                    new Chart(ctxRides.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: rideLabels,
+                            datasets: [{
+                                label: 'Nombre de trajets',
+                                data: rideCounts,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1 // IncrÃ©ments de 1
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.error("Element #ridesChart non trouvÃ©");
+                }
+        
+                const ctxBookings = document.getElementById('bookingsChart');
+                if (ctxBookings) {
+                    new Chart(ctxBookings.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: bookingLabels,
+                            datasets: [{
+                                label: 'Nombre de réservations',
+                                data: bookingCounts,
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 2,
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1 // IncrÃ©ments de 1
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.error("Element #bookingsChart non trouvÃ©");
+                }
+
+                
+                // Graphique des crédits par jour
+                const ctxByDay = document.getElementById('creditsByDayChart');
+                if (ctxByDay) {
+                    new Chart(ctxByDay.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: days,
+                            datasets: [{
+                                label: 'Crédits par Jour',
+                                data: creditsByDayValues,
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { stepSize: 1 }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.error("Element #creditsByDayChart non trouvé");
+                }
+              
+            });
+        </script>
+        
+        <!-- Charger Chart.js aprÃ¨s le script -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+{% endblock %}

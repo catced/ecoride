@@ -50,13 +50,19 @@ class UserRegistrationFormType extends AbstractType
                 'second_options' => ['label' => 'Confirmer le mot de passe'],
                 'mapped' => true, // Empêche Doctrine de considérer ce champ comme une colonne en base de données
                 'invalid_message' => 'Les mots de passe doivent correspondre.',
+                // 'error_bubbling' => true,  // ?? Permet d'afficher l'erreur sous le champ
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'Veuillez entrer un mot de passe.']),
                     new Assert\Length([
-                        'min' => 6,
-                        'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
-                        'max' => 4096,
+                        'min' => 8,
+                        // 'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
+                        // 'max' => 4096,
                     ]),
+                    new Assert\Regex([
+                        'pattern' => '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/',
+                        'message' => 'Le mot de passe doit contenir au moins : une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&).',
+                    ]),
+             
                 ],
             ])
             // ->add('userType', ChoiceType::class, [

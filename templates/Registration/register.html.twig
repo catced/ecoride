@@ -1,26 +1,13 @@
-
-        {% extends 'base.html.twig' %}
+{# 
+{% extends 'base.html.twig' %}
        
 {% block title %}Inscription{% endblock %}
 
 {% block body %}
     <h1>Inscription</h1>
 
-    {# {% for message in app.flashes('error') %}
-        <div class="alert alert-danger">
-            {{ message }}
-        </div>
-    {% endfor %}
 
-    {% for message in app.flashes('success') %}
-        <div class="success">
-            {{ message }}
-        </div>
-    {% endfor %} #}
 
-    {# {{ form_start(registrationForm) }} #}
-    {{ form_start(registrationForm, {'method': 'post', 'action': path('app_register')}) }}
-    {# {{ form_start(registrationForm, {'method': 'POST'}) }} #}
         {{ form_row(registrationForm.name) }}
         {{ form_row(registrationForm.email) }}
 
@@ -28,7 +15,7 @@
             <label>{{ form_label(registrationForm.plainPassword.first) }}</label>
             <div class="password-container">
                 {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'password-input'}}) }}
-                {# <button type="button" class="toggle-password"><i class="fa fa-eye"></i></button> #}
+ 
             </div>
         </div>
         
@@ -36,20 +23,189 @@
             <label>{{ form_label(registrationForm.plainPassword.second) }}</label>
             <div class="password-container">
                 {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'password-input'}}) }}
-                {# <button type="button" class="toggle-password"><i class="fa fa-eye"></i></button> #}
+             
             </div>
         </div>
         {{ form_row(registrationForm.pseudo) }}
-        {# {{ form_row(registrationForm.userType) }} #}
-        {# {{ form_row(registrationForm.userType, {'attr': {'id': 'user-type'}}) }} #}
-        {# <div id="vehicle-form" style="display: none;">
-            <h3>Informations du véhicule</h3>
-            {{ form_row(registrationForm.vehicles) }}
-        </div> #}
-        
+             
         <button type="submit" class="btn btn-primary">S'inscrire</button>
     {{ form_end(registrationForm) }}
  
    
 
+{% endblock %} #}
+
+{# <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head> #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="col-md-6 mx-auto"> <!-- Centrage du formulaire -->
+        <h1 class="mb-3 text-center">Inscription</h1>
+
+        <!-- Affichage des messages flash -->
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <!-- Formulaire d'inscription -->
+        {{ form_start(registrationForm, {'method': 'post', 'action': path('app_register'), 'attr': {'class': 'needs-validation'}}) }}
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.name, 'Nom', {'label_attr': {'class': 'form-label'}}) }}
+                
+                {{ form_widget(registrationForm.name, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(registrationForm.name) }}
+               
+            </div>
+
+            <div class="mb-3 ">
+                {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                
+                {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(registrationForm.email) }}
+               
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.pseudo, 'Pseudo', {'label_attr': {'class': 'form-label'}}) }}
+               
+                {{ form_widget(registrationForm.pseudo, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(registrationForm.pseudo) }}
+               
+            </div>
+
+            {# <div class="mb-3 row">
+                <label class="form-label">Mot de passe</label>
+                <div class="col-md-10">
+                    <div class="password-container position-relative">
+                        {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control password-input'}}) }}
+                        <span class="toggle-password position-absolute end-0 top-50 translate-middle-y pe-3" style="cursor: pointer;">
+                            <i class="fa fa-eye"></i>
+                        </span>
+                    </div>
+                </div>
+                {{ form_errors(registrationForm.plainPassword.first) }}
+            </div>
+
+            <div class="mb-3 row">
+                <label class="form-label">Confirmer le mot de passe</label>
+                <div class="col-md-10">
+                    <div class="password-container position-relative">
+                        {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control password-input'}}) }}
+                        <span class="toggle-password position-absolute end-0 top-50 translate-middle-y pe-3" style="cursor: pointer;">
+                            <i class="fa fa-eye"></i>
+                        </span>
+                    </div>
+                </div>
+                {{ form_errors(registrationForm.plainPassword.second) }}
+            </div> #}
+
+            <div class="form-group">
+                <label>{{ form_label(registrationForm.plainPassword.first) }}</label>
+                <div class="password-container d-flex align-items-center">
+                    {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'password-input form-control'}}) }}
+                    
+                    <button type="button" class="toggle-password btn btn-light ms-2">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                    {% if registrationForm.vars.submitted %}
+                    {{ form_errors(registrationForm.plainPassword.first) }}
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-group mb-4">
+                <label>{{ form_label(registrationForm.plainPassword.second) }}</label>
+                <div class="password-container d-flex align-items-center">
+                    {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'password-input form-control'}}) }}
+                    
+                    <button type="button" class="toggle-password btn btn-light ms-2">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                    {% if registrationForm.vars.submitted %}
+                    {{ form_errors(registrationForm.plainPassword.second) }}
+                    {% endif %}
+                </div>
+            </div>
+
+           
+            <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+            
+        {{ form_end(registrationForm) }}
+
+        <p class="mt-3 text-center">
+            Déjà un compte ? <a href="{{ path('app_login') }}">Connectez-vous ici</a>.
+        </p>
+    </div>
+</div>
+
+<script>
+    // Affichage/Masquage du mot de passe
+    document.querySelectorAll('.toggle-password').forEach(item => {
+        item.addEventListener('click', function () {
+            let input = this.previousElementSibling;
+            if (input.type === "password") {
+                input.type = "text";
+                this.innerHTML = '<i class="fa fa-eye-slash"></i>';
+           } else {
+                input.type = "password";
+                this.innerHTML = '<i class="fa fa-eye"></i>';
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".toggle-password").forEach(button => {
+            button.addEventListener("click", function () {
+                let passwordInput = this.previousElementSibling;
+                let icon = this.querySelector("i");
+
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+                } else {
+                    passwordInput.type = "password";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                }
+            });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let passwordInput = document.querySelector(".password-input");
+        let errorMessage = document.createElement("div");
+        errorMessage.classList.add("text-danger", "mt-2");
+
+        passwordInput.parentNode.appendChild(errorMessage);
+
+        passwordInput.addEventListener("input", function () {
+            let password = passwordInput.value;
+            let regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+            if (!regex.test(password)) {
+                errorMessage.innerText = "Le mot de passe doit contenir au moins 8 caractères dont une majuscule, une minuscule, un chiffre et un caractère spécial.";
+            } else {
+                errorMessage.innerText = "";
+            }
+        });
+    });
+</script>
+
 {% endblock %}
+

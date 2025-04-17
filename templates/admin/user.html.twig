@@ -24,4 +24,59 @@
             {% endfor %}
         </tbody>
     </table>
+
+
+    <script>
+        // Affichage/Masquage du mot de passe
+        document.querySelectorAll('.toggle-password').forEach(item => {
+            item.addEventListener('click', function () {
+                let input = this.previousElementSibling;
+                if (input.type === "password") {
+                    input.type = "text";
+                    this.innerHTML = '<i class="fa fa-eye-slash"></i>';
+               } else {
+                    input.type = "password";
+                    this.innerHTML = '<i class="fa fa-eye"></i>';
+                }
+            });
+        });
+    
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".toggle-password").forEach(button => {
+                button.addEventListener("click", function () {
+                    let passwordInput = this.previousElementSibling;
+                    let icon = this.querySelector("i");
+    
+                    if (passwordInput.type === "password") {
+                        passwordInput.type = "text";
+                        icon.classList.remove("fa-eye");
+                        icon.classList.add("fa-eye-slash");
+                    } else {
+                        passwordInput.type = "password";
+                        icon.classList.remove("fa-eye-slash");
+                        icon.classList.add("fa-eye");
+                    }
+                });
+            });
+        });
+    
+        document.addEventListener("DOMContentLoaded", function () {
+            let passwordInput = document.querySelector(".password-input");
+            let errorMessage = document.createElement("div");
+            errorMessage.classList.add("text-danger", "mt-2");
+    
+            passwordInput.parentNode.appendChild(errorMessage);
+    
+            passwordInput.addEventListener("input", function () {
+                let password = passwordInput.value;
+                let regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+    
+                if (!regex.test(password)) {
+                    errorMessage.innerText = "Le mot de passe doit contenir au moins 8 caractères dont une majuscule, une minuscule, un chiffre et un caractère spécial.";
+                } else {
+                    errorMessage.innerText = "";
+                }
+            });
+        });
+    </script>
 {% endblock %}

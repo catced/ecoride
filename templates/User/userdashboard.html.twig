@@ -3,215 +3,96 @@
 {% block title %}Espace utilisateur{% endblock %}
 
 {% block body %}
-    <h1>Bienvenue {{ app.user.name }} !</h1>
+<div class="container mt-4">
+    <div class="col-md-6 ms-5">
+        <h1 class="mb-3">Bienvenue {{ app.user.name }} !</h1>
 
-    <p>Choisissez votre rôle :</p>
-    
-    {# <form id="role-form"> #}
-    <form method="post" action="{{ path('set_role') }}">
-        <label>
-            <input type="radio" name="role" value="passager" > Passager
-        </label>
-        <label>
-            <input type="radio" name="role" value="chauffeur"> Chauffeur
-        </label>
-        <label>
-            <input type="radio" name="role" value="chauffeur-passager"> Chauffeur-Passager
-        </label>
-        {# <button type="submit" id="validate-btn">Valider</button> #}
-    </form>
-
-  
-    <form method="get" action="{{ path('search_results') }}" id="filter-form" style="display: none;">
-        <h2>Rechercher un trajet</h2>
-        
-        <label for="departure">Départ :</label>
-        <input type="text" id="departure" name="departure">
-    
-        <label for="destination">Destination :</label>
-        <input type="text" id="destination" name="destination">
-    
-        <label for="departureDay">Date :</label>
-        {# <input type="datetime-local" id="departureDay" name="departureDay"> #}
-        <input type="text" id="departureDay" name="departureDay" placeholder="dd/mm/yyyy" onfocus="(this.type='date')" onblur="formatDate(this)">
-        <input type="hidden" id="hiddenDepartureDay" name="departureDay">
-    
-        <button type="submit">Rechercher</button>
-    </form>
-
-    {# <h2>Ajouter un véhicule</h2>
-    {{ form_start(vehicleForm) }} 
-        {{ form_widget(vehicleForm) }}
-        <button type="submit">Enregistrer le véhicule</button>
-    {{ form_end(vehicleForm) }} #}
-
-    {# <h2>Proposer un trajet</h2>
-    {{ form_start(rideForm) }}
-        {{ form_widget(rideForm) }}
-        <button type="submit">Proposer le trajet</button>
-    {{ form_end(rideForm) }} #}
-
-    <h1>Tableau de bord</h1>
-
-    {% if app.user and rideForm is defined  %}   
-    <h1>Tableau de bord</h1>
-    <h3>Proposer un voyage</h3>
-        {{ form_start(rideForm) }}
-            {{ form_row(rideForm.departure) }}
-            {{ form_row(rideForm.destination) }}
-            {{ form_row(rideForm.departureDay) }}
-            {{ form_row(rideForm.price) }}
-            {{ form_row(rideForm.duration) }}
-            {{ form_row(rideForm.vehicle) }}
-            <button type="submit">Proposer </button> 
-        {{ form_end(rideForm) }} 
-
-        <h2>Vos véhicules</h2>
-    {% if vehicles is not defined or vehicles is empty %}
-        <p>Vous n'avez pas encore enregistré de véhicule.</p>
-    {% else %}
-        <ul>
-            {% for vehicle in vehicles %}
-                <li>{{ vehicle.brand }} - {{ vehicle.model }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %} 
-
-    <div id="vehicle-form" style="display: none;">
-        <h3>Informations du véhicule</h3>
-        {{ form_start(vehicleForm) }}
-            {{ form_row(vehicleForm.licensePlate) }} 
-            {{ form_row(vehicleForm.brand) }}
-            {{ form_row(vehicleForm.model) }}
-            {{ form_row(vehicleForm.energy) }}
-            {{ form_row(vehicleForm.dateFirstUse) }}
-            {{ form_row(vehicleForm.color) }}
-            {{ form_row(vehicleForm.seatscount) }}
-
-            {# <button type="submit">Enregistrer</button> #}
-        <h3>Préférences</h3>
-
-        <div>
-            {{ form_row(vehicleForm.preferences) }}
-        </div>
-
-            {# <h3>Ajoutez vos propres prÃ©fÃ©rences :</h3>
-            <div id="custom-preferences-list">
-                {{ form_widget(form.customPreferences) }}
+        <p>Choisissez votre rôle :</p>
+        <form method="post" action="{{ path('set_role') }}">
+            <div class="d-flex gap-4">
+                <label>
+                    <input type="radio" name="choix" value="passager" {% if app.session.get('role') == 'passager' %}checked{% endif %}> Passager
+                </label>
+                <label>
+                    <input type="radio" name="choix" value="chauffeur" {% if app.session.get('role') == 'chauffeur' %}checked{% endif %}> Chauffeur
+                </label>
+                <label>
+                    <input type="radio" name="choix" value="chauffeur-passager" {% if app.session.get('role') == 'chauffeur-passager' %}checked{% endif %}> Chauffeur-Passager
+                </label>
             </div>
+            <button type="submit" class="btn btn-primary mt-2">Enregistrer le rôle</button>
+        </form>
 
-            <button type="button" id="add-preference">Ajouter une prÃ©fÃ©rence</button> #}
-        {{ form_end(vehicleForm) }}
+        {% set role = app.session.get('role') %}
+
+        {% if role == 'passager' %}
+            {% include 'partials/passenger_section.html.twig' %}
+            {# <div class="mt-3">
+                <a href="{{ path('app_mes_voyages') }}" class="btn btn-secondary btn-sm w-100">Voir mes réservations</a>
+            </div> #}
+
+        {% elseif role == 'chauffeur' %}
+            {% include 'partials/driver_section.html.twig' %}
+
+        {% elseif role == 'chauffeur-passager' %}
+            {% include 'partials/passenger_section.html.twig' %}
+            {% include 'partials/driver_section.html.twig' %}
+        {% endif %}
+
     </div>
-    {% endif %} 
+</div>
 
-    
-    <script>
-        function formatDate(input) {
-            let hiddenInput = document.getElementById('hiddenDepartureDay');
-    
-            if (!input.value) {
-                hiddenInput.value = ""; // Assurez-vous d'envoyer une valeur vide au serveur
-                return;
-            }
-    
-            let date = new Date(input.value);
-            if (isNaN(date)) return;
-    
-            let day = String(date.getDate()).padStart(2, '0');
-            let month = String(date.getMonth() + 1).padStart(2, '0');
-            let year = date.getFullYear();
-    
-            let formattedDate = `${day}/${month}/${year}`;
-            input.type = 'text';
-            input.value = formattedDate;
-            hiddenInput.value = formattedDate; // Assurez-vous que la requête inclut bien la date
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let filterForm = document.getElementById("filter-form");
+        let rideFormContainer = document.getElementById("ride-form-container");
+        let passengerRides = document.getElementById("passenger-rides");
+        let role = "{{ role }}";
+
+        if (role === "passager") {
+            filterForm.style.display = "block";
+            if (rideFormContainer) rideFormContainer.style.display = "none";
+            if (passengerRides) passengerRides.style.display = "block";
+        } else if (role === "chauffeur") {
+            filterForm.style.display = "none";
+            if (rideFormContainer) rideFormContainer.style.display = "block";
+            if (passengerRides) passengerRides.style.display = "none";
+        } else if (role === "chauffeur-passager") {
+            filterForm.style.display = "none";
+            if (rideFormContainer) rideFormContainer.style.display = "block";
+            if (passengerRides) passengerRides.style.display = "block";
         }
-    
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll('input[name="role"]').forEach(radio => {
-                let roleRadios = document.querySelectorAll('input[name="role"]');
-                let filterForm = document.getElementById("filter-form");
 
-                roleRadios.forEach(radio => {
-                    radio.addEventListener('change', function () {
-                        console.log("Valeur sélectionnée :", this.value); // Debugging
-
-                        if (this.value === "passager") {
-                          filterForm.style.display = "block"; // Afficher le formulaire de recherche
-                       } else {
-                           filterForm.style.display = "none"; // Masquer le formulaire pour les autres rôles
-                       }
-                                
-                   });
-                 if (this.value === "passager") {
-                    window.location.href = "{{ path('search_results') }}"; // Vérifie bien le nom de la route
-                } else {
-                    let vehicleForm = document.getElementById('vehicle-form');
-                    if (vehicleForm) { // Vérifie que l'élément existe avant de modifier son style
-                        vehicleForm.style.display = (this.value === 'chauffeur' || this.value === 'chauffeur-passager') ? 'block' : 'none';
-                    }
-                }
-
-               
-
-                });
-            });
-        });
-
-        document.addEventListener("DOMContentLoaded", function () {
-            let filterForm = document.getElementById("filter-form");
-            if (window.location.search.includes("departure") || window.location.search.includes("destination")) {
-                filterForm.style.display = "block"; // Affiche les filtres si une recherche a été faite
-            }
-        });
-
-        document.addEventListener("DOMContentLoaded", function () {
-            let passengerCheckbox = document.getElementById("passenger-checkbox"); // Remplace avec l'ID exact
-            let filterForm = document.getElementById("filter-form");
-        
-            if (passengerCheckbox && filterForm) {
-                passengerCheckbox.addEventListener("change", function () {
-                    filterForm.style.display = "block"; // Affiche les filtres
-                });
-            }
-        });
-
-        document.querySelectorAll('input[name="role"]').forEach(radio => {
+        document.querySelectorAll('input[name="choix"]').forEach(radio => {
             radio.addEventListener('change', function () {
-                let filterForm = document.getElementById('filter-form');
-                let vehicleForm = document.getElementById('vehicle-form');
-    
-                if (this.value === 'passager') {
-                    filterForm.style.display = 'block';
-                    vehicleForm.style.display = 'none';
-                } else {
-                    filterForm.style.display = 'none';
-                    vehicleForm.style.display = 'block';
+                let choix = this.value;
+                let proposerVoyage = document.getElementById("ride-form-container");
+
+                if (choix === "passager") {
+                    filterForm.style.display = "block";
+                    if (proposerVoyage) proposerVoyage.style.display = "none";
+                    if (passengerRides) passengerRides.style.display = "block";
+                } else if (choix === "chauffeur" || choix === "chauffeur-passager") {
+                    filterForm.style.display = "none";
+                    if (proposerVoyage) proposerVoyage.style.display = "block";
+                    if (passengerRides) passengerRides.style.display = "none";
                 }
+
+                fetch("{{ path('set_role') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: JSON.stringify({ role: this.value })
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        }
+                    });
             });
         });
-
-        document.getElementById('add-preference').addEventListener('click', function () {
-            let container = document.getElementById('custom-preferences-list');
-            let index = container.children.length;
-            
-            let newInput = document.createElement('input');
-            newInput.type = 'text';
-            newInput.name = 'vehicle[customPreferences][' + index + ']';
-            newInput.classList.add('custom-preference');
-            
-            container.appendChild(newInput);
-        });
-       
-        document.getElementById("role-form").addEventListener("submit", function (event) {
-            const selectedRole = document.querySelector('input[name="role"]:checked').value;
-            
-            if (selectedRole === "passager") {
-                event.preventDefault(); 
-                window.location.href = "/passager-dashboard"; 
-            }
-        }); 
-        
-    </script>
+    });
+</script>
 {% endblock %}

@@ -1,0 +1,138 @@
+{# {% extends 'base.html.twig' %}
+
+{% block title %}Ajout d'un véhicule{% endblock %}
+
+{% block body %}
+    <h2>Ajoutez un véhicule</h2>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">Ajouter</button>
+    {{ form_end(form) }}
+
+{% endblock %} #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace utilisateur{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="col-md-6 ms-5">
+          
+                <h3>Ajouter un véhicule</h3>
+                {{ form_start(form) }}
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(form.brand) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(form.brand, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(form.model) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(form.model, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(form.licensePlate) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(form.licensePlate, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(form.color) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(form.color, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(form.seatscount) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(form.seatscount, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(form.energy) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(form.energy, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(form.dateFirstUse) }}</label>
+                    <div class="col-md-8">
+                        {{ form_widget(form.dateFirstUse, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+    
+                <div class="mb-2 row">
+                    <label class="col-md-4">{{ form_label(form.preferences) }}</label>
+                    <div class="col-md-8">
+                        {% for choice in form.preferences %}
+                        <div class="form-check">
+                            {{ form_widget(choice, {'attr': {'class': 'form-check-input me-2'}}) }}
+                            <label class="form-check-label">{{ choice.vars.label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+    
+                <button type="submit" class="btn btn-info mt-3">Enregistrer le véhicule</button>
+                {{ form_end(form) }}
+          
+       
+          
+    
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let filterForm = document.getElementById("filter-form");
+        let rideFormContainer = document.getElementById("ride-form-container");
+       
+
+        document.querySelectorAll('input[name="choix"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                    let choix = this.value; // Récupère la valeur sélectionnée
+                    let proposerVoyage = document.getElementById("ride-form-container");
+    
+                    // Affiche le formulaire de trajet si l'utilisateur est chauffeur
+                    proposerVoyage.style.display = (choix === "chauffeur" || choix === "chauffeur-passager") ? "block" : "none";
+    
+               if (this.value === "passager") {
+                    filterForm.style.display = "block";
+                    rideFormContainer.style.display = "none";
+                } else if (this.value === "chauffeur" || this.value === "chauffeur-passager") {
+                    filterForm.style.display = "none";
+                    rideFormContainer.style.display = "block";
+                } else {
+                    filterForm.style.display = "none";
+                    rideFormContainer.style.display = "none";
+                }
+
+                // Enregistre le choix via AJAX
+                fetch("{{ path('set_role') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: JSON.stringify({ role: this.value })
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success && this.value === "passager") {
+                          window.location.href = "{{ path('app_mes_voyages') }}";
+                      }
+                  });
+            });
+        });
+    });
+</script>
+
+{% endblock %}

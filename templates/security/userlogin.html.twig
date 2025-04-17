@@ -2,52 +2,36 @@
 
 {% block title %}Log in!{% endblock %}
 
-{# {% block stylesheets %}
-    {# <style>
-        #inputEmail, #inputPassword {
-            max-width: 280px;
-        }
-
-        body {
-            background-color: skyblue;
-        }
-
-        h1.h3.mb-3.font-weight-normal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            margin: 0;
-        }
-    </style> #}
-{# {% endblock %} #}
-
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+<div class="body">
+    <div class="col-md-4 ms-5"> <!-- Réduction de largeur et alignement à gauche -->
+        <h1>Connexion</h1>
 
-    {% if app.user %}
-        <div class="mb-3">
-         {# Vous Ãªtes connectÃ© en tant que {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">DÃ©connexion</a> #}
-        </div>
-    {% endif %}
+        <form method="post">
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
 
-    {# <h1 class="h3 mb-3 font-weight-normal">Identifiez-vous</h1> #}
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username|default('') }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Mot de passe</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+            <div class="form-group d-flex align-items-center">
+                <label class="col-md-4" for="inputEmail">Email</label>
+                <div class="col-md-5">
+                    <input type="email" value="{{ last_username|default('') }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+                </div>
+            </div>
 
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
+            <div class="form-group d-flex align-items-center mt-2">
+                <label class="col-md-4" for="inputPassword">Mot de passe</label>
+                <div class="col-md-5">
+                    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+                </div>
+            </div>
 
-    <button class="btn btn-lg btn-primary" type="submit">
-        Connexion
-    </button>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-    
-</form>
+            <button class="btn btn-primary mt-3" type="submit">Connexion</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
-

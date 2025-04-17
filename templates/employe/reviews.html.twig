@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Avis en attente{% endblock %}
+
+{% block body %}
+    <h1>Avis en attente de validation</h1>
+
+    {# {% for review in reviews %} #}
+        {# <div class="review"> #}
+            {# <p><strong>{{ review.passenger.pseudo }}</strong> a laissé  l'avis : {{ review.comment }}</p> #}
+            {# <p>{{ review.comment }}</p> #}
+            {# <p><small>Posté le {{ review.createdAt|date('d/m/Y H:i') }}</small></p> #}
+
+            {# <form action="{{ path('validate_review', { id: review.id }) }}" method="post"> #}
+                {# <button type="submit">Valider</button> #}
+            {# </form> #}
+        {# </div> #}
+    {# {% else %} #}
+        {# <p>Aucun avis en attente.</p> #}
+    {# {% endfor %} #}
+
+    
+
+   
+
+{% endblock %}

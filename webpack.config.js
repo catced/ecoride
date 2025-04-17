@@ -53,7 +53,7 @@ Encore
         config.corejs = '3.38';
     })
 
-    .addStyleEntry('app', './assets/styles/app.scss')
+    .addStyleEntry('app_styles', './assets/styles/app.scss')
     .enableSassLoader();
 
     // enables Sass/SCSS support

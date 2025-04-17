@@ -12,144 +12,79 @@ use App\Form\RideFilterFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\VarDumper\VarDumper; 
+use App\Repository\BookingRepository;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Repository\Search_ResultsRepository;
+
+
 
 class Search_ResultsController extends AbstractController
 {
-    
-    // #[Route("/search-results", name:"search_results")]
-    // public function searchResults(Request $request): Response
-    // {
-    //     $query = $request->query->get('q');
-
-    //     return $this->render('search/results.html.twig', [
-    //         'query' => $query,
-    //     ]);
-    // }
-//     #[Route('/search-result', name: 'search_results', methods: ['GET'])]
-//     public function searchRoutes(Request $request, RideRepository $rideRepository): JsonResponse
-// {
-//     $query = $request->query->get('q', '');
-    
-//     // Effectuer une recherche en base de donn?es
-//     $rides = $rideRepository->findBySearchQuery($query);
-
-//     // Formater les r?sultats pour le JSON
-//     $results = [];
-//     foreach ($rides as $ride) {
-//         $results[] = [
-//             'id' => $ride->getId(),
-//             'departure' => $ride->getDeparture(),
-//             'destination' => $ride->getDestination(),
-//             'date' => $ride->getDepartureDay()->format('d/m/Y H:i'),
-//         ];
-//     }
-
-//     return $this->json($results);
-// }
-    // src/Controller/SearchResultsController.php
-
-#[Route('/search-result', name: 'search_results')]
+    #[Route('/search_results', name: 'search_results', methods: ['GET'])]
 public function search(Request $request, RideRepository $rideRepository, EntityManagerInterface $em): Response
 {
-    // RÃ©cupÃ©rer les valeurs du formulaire
-    // $departure = $request->query->get('departure');
-    // $destination = $request->query->get('destination');
-    // $departureDay = $request->query->get('departureDay');
-
-    $form = $this->createForm(RideFilterFormType::class);
-
-    // Traitez le formulaire
-    $form->handleRequest($request);
-
-    // Construisez la requÃªte de filtrage
-    // $ridesQuery = $em->getRepository(Ride::class)->createQueryBuilder('r');
-
-    // // Appliquez les filtres si les valeurs sont dÃ©finies
-    // if ($form->isSubmitted() && $form->isValid()) {
-       // $data = $form->getData();
-
-        
-    // // Construire la requÃªte dynamique
-   
-
-    //     if ($data->getDeparture()) {
-    //         $ridesQuery->andWhere('r.departure = :departure')
-    //                     ->setParameter('departure', '%'.$data->getDeparture().'%');
-                        
-    //     }
-    //     if ($data->getDestination()) {
-    //         $ridesQuery->andWhere('r.destination = :destination')
-    //                     ->setParameter('destination', '%'.$data->getDestination().'%');
-                        
-    //     }
-    // }
-            // if ($data->getDepartureDay()) {
-            //     $departureDay = \DateTime::createFromFormat('d/m/Y', $data->getDepartureDay());
-            //     $ridesQuery->andWhere('r.departureDay >= :departureDay')
-            //                  ->setParameter('departureDay', $data->getDepartureDay());
-            // }
-            // }
-        
-        
-    // $rides = $ridesQuery->getQuery()->getResult();
-
     $departure = $request->query->get('departure');
     $destination = $request->query->get('destination');
-    //$today = new \DateTimeImmutable(); 
-    $departureDay =  $request->query->get('departureDay');
-    //$energy = $request->query->get('energy');
+    $departureDayString = $request->query->get('departureDay');
     $price = $request->query->get('price');
     $availableSeats = $request->query->get('availableSeats');
     $duration = $request->query->get('duration');
+    $ecologique = $request->query->get('ecologique');
+    
+    $qb = $em->createQueryBuilder()
+        ->select('r')
+        ->from(Ride::class, 'r')
+        ->join('r.vehicle', 'v')
+        ->where('1=1'); // Permet d'ajouter dynamiquement les conditions
 
+    if ($departure) {
+        $qb->andWhere('r.departure LIKE :departure')
+            ->setParameter('departure', '%' . $departure . '%');
+    }
 
-    if ($departureDay) {
-        $departureDay = \DateTime::createFromFormat('d/m/Y', $departureDay);
+    if ($destination) {
+        $qb->andWhere('r.destination LIKE :destination')
+            ->setParameter('destination', '%' . $destination . '%');
+    }
+
+    if ($departureDayString) {
+        $departureDay = \DateTime::createFromFormat('d/m/Y', $departureDayString);
         if ($departureDay) {
-            $departureDay->setTime(0, 0, 0); // Met l'heure à minuit pour ignorer l'heure
+            $qb->andWhere('r.departureDay >= :departureDay')
+                ->setParameter('departureDay', $departureDay->format('Y-m-d'));
         }
+    } else {
+        // Si aucune date n'est spécifiée, exclure les voyages passés
+        $today = new \DateTime();
+        $qb->andWhere('r.departureDay >= :today')
+            ->setParameter('today', $today->format('Y-m-d'));
     }
-    
- 
-    $ridesQuery = $em->createQueryBuilder()
-    ->select('r')
-    ->from('App\Entity\Ride', 'r')
-    ->where('r.departure = :departure')
-    ->andWhere('r.destination = :destination')
-    ->andWhere('r.availableSeats >= 1')
-    ->andWhere('r.departureDay >= :departureDay')
-    ->setParameter('departure', $departure)
-    ->setParameter('destination', $destination)
-    ->setParameter('departureDay', $departureDay);
+
     if ($price) {
-        $ridesQuery->andWhere('r.price <= :price')
-                   ->setParameter('price', $price);
+        $qb->andWhere('r.price <= :price')
+            ->setParameter('price', $price);
     }
+
     if ($availableSeats) {
-        $ridesQuery->andWhere('r.availableSeats >= :availableSeats')
-                   ->setParameter('availableSeats', $availableSeats);
+        $qb->andWhere('r.availableSeats >= :availableSeats')
+            ->setParameter('availableSeats', $availableSeats);
     }
+
     if ($duration) {
-        $ridesQuery->andWhere('r.duration <= :duration')
-                   ->setParameter('duration', $duration);
-    }
-    
-    // if ($availableSeats) {
-    //     $ridesQuery->andWhere('r.availableSeats <= :availableSeats')
-    //                ->setParameter('availableSeats', $availableSeats);
-    // }
-    // if ($departureDay) {
-    //     $ridesQuery->setParameter('departureDay', $departureDay);
-    // }
-
-    $rides = $ridesQuery->getQuery()->getResult();
-    
-
-
-        return $this->render('ride/search_results.html.twig', [
-            'form' => $form->createView(),
-            'rides' => $rides,
-        ]);
+        $qb->andWhere('r.duration <= :duration')
+            ->setParameter('duration', $duration);
     }
 
+    if (!empty($ecologique)) {
+        $qb->andWhere('v.energy = :energy')
+            ->setParameter('energy', 'Electrique');
+    }
+
+    // Obtenir les résultats
+    $rides = $qb->getQuery()->getResult();
+
+    return $this->render('ride/search_results.html.twig', [
+        'rides' => $rides,
+    ]);
+}
 }

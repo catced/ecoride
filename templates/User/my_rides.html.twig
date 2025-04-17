@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Trajets{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="col-md-8 mx-auto">
+        <h1 class="text-center mb-4">Mes Trajets</h1>
+
+        {# Affichage des messages flash #}
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {# Tableau des trajets #}
+        <div class="card p-3 shadow-sm">
+            <h2 class="text-center mb-3" style="font-size: 1.2rem;">Liste de mes trajets</h2>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>Trajet</th>
+                            <th>Date</th>
+                            <th>Passagers</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ride in rides %}
+                            <tr>
+                                <td>{{ ride.departure }} → {{ ride.destination }}</td>
+                                <td>{{ ride.departureDay|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    <ul class="list-unstyled">
+                                        {% if ride.bookings is not empty %}
+                                            {% for booking in ride.bookings %}
+                                                <li>👤 {{ booking.user.pseudo }} ({{ booking.user.email }}) - {{ booking.seatsBooked }} places</li>
+                                            {% endfor %}
+                                        {% else %}
+                                            <li>Aucun passager</li>
+                                        {% endif %}
+                                    </ul>
+                                </td>
+                                <td>
+                                    {% if ride.status == 'ongoing' %}
+                                        <span class="badge bg-warning text-dark">En cours</span>
+                                    {% elseif ride.status == 'completed' %}
+                                        <span class="badge bg-success">Terminé</span>
+                                    {% elseif ride.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Annulé</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">En attente</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {# Bouton Annuler #}
+                                    <form method="post" action="{{ path('ride_cancel', {'id': ride.id}) }}" class="d-inline">
+                                        <button type="submit" class="btn btn-danger btn-sm" {% if ride.status in ['ongoing', 'completed', 'cancelled'] %}disabled{% endif %}>
+                                            ❌ Annuler
+                                        </button>
+                                    </form>
+
+                                    {# Bouton Démarrer #}
+                                    {% if ride.status is null or ride.status == 'pending' %}
+                                        {% if ride.departureDay|date("Y-m-d") > "now"|date("Y-m-d") %}
+                                            <button class="btn btn-success btn-sm" disabled title="Départ impossible avant la date prévue">
+                                                🚀 Démarrer
+                                            </button>
+                                        {% else %}
+                                            <form method="post" action="{{ path('ride_start', {'id': ride.id}) }}" class="d-inline">
+                                                <input type="hidden" name="status" value="ongoing">
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    🚀 Démarrer
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    {% elseif ride.status == 'ongoing' %}
+                                        <form method="post" action="{{ path('ride_complete', {'id': ride.id}) }}" class="d-inline">
+                                            <input type="hidden" name="status" value="completed">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                🎯 Arrivé
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Aucun trajet enregistré.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="{{ path('app_userdashboard') }}" class="btn btn-secondary">Retour</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

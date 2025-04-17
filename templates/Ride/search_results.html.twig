@@ -1,119 +1,124 @@
-{# {% extends 'base.html.twig' %}
-
-{% block title %}Résultats de recherche{% endblock %}
-
-{% block body %}
-<div class="container">
-    <h1>Résultats de votre recherche</h1>
-
-    {% if rides is empty %}
-        <p>Aucun itinéraire trouvé pour cette date.</p>
-
-        {% if alternativeRide %}
-            <p>?? Cependant, nous avons trouvé un itinéraire proche :</p>
-            <ul>
-                <li><strong>Départ :</strong> {{ alternativeRide.departure }}</li>
-                <li><strong>Arrivée :</strong> {{ alternativeRide.destination }}</li>
-                <li><strong>Date :</strong> {{ alternativeRide.departureDay|date('d/m/Y H:i') }}</li>
-                <li><strong>Prix :</strong> {{ alternativeRide.price }} ?</li>
-                <li><strong>Conducteur :</strong> {{ alternativeRide.driver.pseudo }}</li>
-            </ul>
-            <a href="{{ path('ride_details', {'id': alternativeRide.id}) }}" class="btn btn-primary">Voir ce trajet</a>
-        {% else %}
-            <p>?? Aucun itinéraire proche n'a été trouvé.</p>
-        {% endif %}
-    {% else %}
-        <ul>
-            {% for ride in rides %}
-                <li>
-                    <strong>Départ :</strong> {{ ride.departure }} <br>
-                    <strong>Arrivée :</strong> {{ ride.destination }} <br>
-                    <strong>Date :</strong> {{ ride.departureDay|date('d/m/Y H:i') }} <br>
-                    <strong>Prix :</strong> {{ ride.price }} € <br>
-                    <a href="{{ path('ride_details', {'id': ride.id}) }}" class="btn btn-info">Voir le trajet</a>
-                </li>
-                <hr>
-            {% endfor %}
-        </ul>
-    {% endif %}
-</div>
-{% endblock %} #}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}Résultats de recherche{% endblock %}
 
 {% block body %}
+<div class="container-sm mt-4">
+    <div class="col-md-6 mx-auto"> 
+        <h1 class="text-center mb-4">Résultats de votre recherche</h1>
 
-{# <form method="get" action="{{ path('search_results') }}" id="filter-form">
-    <h2>Filtres supplémentaires</h2>
+       
+        <div class="card p-3 shadow-sm">
+            <h2 class="text-center mb-3" style="font-size: 1.2rem;">Filtres</h2>
+            <form method="get" action="{{ path('search_results') }}">
+                <div class="mb-2 row">
+                    <label for="departure" class="col-md-4 col-form-label">Départ :</label>
+                    <div class="col-md-8">
+                        <input type="text" id="departure" name="departure" value="{{ app.request.query.get('departure') }}" class="form-control form-control-sm w-100">
+                    </div>
+                </div>
 
-    <label for="price">Prix max (€) :</label>
-    <input type="float" id="price" name="price" min="0" step="1" placeholder="ex: 50">
+                <div class="mb-2 row">
+                    <label for="destination" class="col-md-4 col-form-label">Destination :</label>
+                    <div class="col-md-8">
+                        <input type="text" id="destination" name="destination" value="{{ app.request.query.get('destination') }}" class="form-control form-control-sm w-100">
+                    </div>
+                </div>
 
-    <label for="duration">Durée du voyages :</label>
-    <input type="time" id="duration" name="duration" min="1" step="1">
+                <div class="mb-2 row">
+                    <label for="departureDay" class="col-md-4 col-form-label">Date :</label>
+                    <div class="col-md-8">
+                        <input type="text" id="departureDay" name="departureDay" value="{{ app.request.query.get('departureDay') }}" class="form-control form-control-sm w-100" placeholder="dd/mm/yyyy">
+                    </div>
+                </div>
 
-    <label for="availableSeats">Places disponibles :</label>
-    <input type="number" id="availableSeats" name="availableSeats" min="1" step="1">
+                <div class="mb-2 row">
+                    <label for="price" class="col-md-4 col-form-label">Prix max (€) :</label>
+                    <div class="col-md-8">
+                        <input type="number" id="price" name="price" value="{{ app.request.query.get('price') }}" min="0" step="1" class="form-control form-control-sm w-100">
+                    </div>
+                </div>
 
-    <button type="submit">Appliquer les filtres</button>
-</form> #}
-<form method="get" action="{{ path('search_results') }}" id="filter-form">
-    <h2>Filtres supplémentaires</h2>
+                <div class="mb-2 row">
+                    <label for="availableSeats" class="col-md-4 col-form-label">Places :</label>
+                    <div class="col-md-8">
+                        <input type="number" id="availableSeats" name="availableSeats" value="{{ app.request.query.get('availableSeats') }}" min="1" step="1" class="form-control form-control-sm w-100">
+                    </div>
+                </div>
 
-    <label for="departure">Départ :</label>
-    <input type="text" id="departure" name="departure" value="{{ app.request.query.get('departure') }}">
+                <div class="mb-2 row">
+                    <label for="duration" class="col-md-4 col-form-label">Durée :</label>
+                    <div class="col-md-8">
+                        <input type="time" id="duration" name="duration" value="{{ app.request.query.get('duration') }}" min="00:00" max="24:00" step="300" class="form-control form-control-sm w-100">
+                    </div>
+                </div>
 
-    <label for="destination">Destination :</label>
-    <input type="text" id="destination" name="destination" value="{{ app.request.query.get('destination') }}">
+                <div class="mb-2 form-check">
+                    <input type="checkbox" id="ecologique" name="ecologique" class="form-check-input" {% if app.request.query.get('ecologique') %} checked{% endif %}>
+                    <label class="form-check-label" for="ecologique">Écologique (véhicules électriques uniquement)</label>
+                </div>
 
-    <label for="departureDay">Date :</label>
-    <input type="text" id="departureDay" name="departureDay" value="{{ app.request.query.get('departureDay') }}" placeholder="dd/mm/yyyy">
+                <button type="submit" class="btn btn-primary btn-sm w-100 mt-2">Filtrer</button>
+            </form>
+        </div>
 
-    <label for="price">Prix max (€) :</label>
-    <input type="number" id="price" name="price" value="{{ app.request.query.get('price') }}" min="0" step="1">
+        {# <div class="mt-3">
+            <a href="{{ path('app_mes_voyages') }}" class="btn btn-secondary btn-sm w-100">Mes réservations (Cliquez sur le bouton)</a>
+        </div> #}
 
-    <label for="availableSeats">Places disponibles :</label>
-    <input type="number" id="availableSeats" name="availableSeats" value="{{ app.request.query.get('availableSeats') }}" min="1" step="1">
+        <h2 class="text-center mt-4">Trajets disponibles</h2>
+       
+        {% if rides is not empty %}
 
-    <label for="duration">durée du voyage :</label>
-    <input type="time" id="duration" name="duration" value="{{ app.request.query.get('duration') }}" min="00:00" max="24:00" step="300">
+            <div class="table-responsive mt-3">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Départ</th>
+                            <th>Destination</th>
+                            <th>Date</th>
+                            <th>Heure</th>
+                            <th>Places</th>
+                            <th>Conducteur</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ride in rides %}
+                        {% if ride.availableSeats >= 1 and ride.driver != app.user %}
+                        {% set isEcologicalFilterActive = app.request.query.get('ecologique') == 'on' %}
+                       
+                        {% if not isEcologicalFilterActive or (isEcologicalFilterActive and ride.vehicle.energy == 'Electrique') %}
+                            {% if ride.availableSeats >= 1 %}
+                            <tr>
+                                <td>{{ ride.departure }}</td>
+                                <td>{{ ride.destination }}</td>
+                                <td>{{ ride.departureDay|date('d/m/Y') }}</td>
+                                <td>{{ ride.departureTime|date('H:i') }}</td>
+                                <td>{{ ride.availableSeats }}</td>
+                                <td>{{ ride.driver.pseudo }}</td>
+                                <td>
+                                    <a href="{{ path('ride_details', { 'id': ride.id }) }}" class="btn btn-info btn-sm">
+                                        Détails
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endif %}
+                         {% endif %}   
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-warning mt-4 text-center">
+                Aucun trajet ne correspond aux filtres sélectionnés.
+            </div>
+        {% endif %}
 
-    <button type="submit">Appliquer les filtres</button>
-</form>
-
-
-
-    <h1>Résultats de recherche</h1>
-
-    <!-- Formulaire de filtre -->
-    {# {{ form_start(form) }}
-        {{ form_row(form.departure) }}
-        {{ form_row(form.destination) }}
-        {{ form_row(form.departureDay) }}
-        <button type="submit">Filtrer</button>
-    {{ form_end(form) }} #}
-
-    <h2>Trajets disponibles</h2>
-  
-    
-    {% if rides is not empty %}
-        <ul>
-            {% for ride in rides %}
-                <li>
-                    {{ ride.departure }} - {{ ride.destination }} le {{ ride.departureDay|date('d/m/Y') }}
-                    <p>Nombre de places disponibles : {{ ride.availableSeats }}</p>
-                    <p>Départ à : {{ ride.departureTime|date('H:i') }}</p>
-                    <p>Conducteur : {{ ride.driver.pseudo }}</p>
-                    <a href="{{ path('ride_details', { 'id': ride.id }) }}">Détails</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Aucun trajet ne correspond aux filtres sélectionnés.</p>
-
-         <!-- Bouton de retour vers l'espace utilisateur -->
-    <a href="{{ path('user_dashboard') }}" class="btn btn-secondary">Retour à l'espace utilisateur</a>
-    {% endif %}
+        <div class="text-center mt-3">
+            <a href="{{ path('app_userdashboard') }}" class="btn btn-secondary btn-sm">Retour</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

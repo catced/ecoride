@@ -11,9 +11,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Ignore;
 
-
 #[ORM\Entity()]
-#[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cette adresse email.')]
+#[UniqueEntity(fields: ['email'], message: 'Un compte existe dÃ©jÃ  avec cette adresse email.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -36,7 +35,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
-    #[Assert\Length(min: 6, minMessage: "Le mot de passe doit contenir au moins 6 caractères.")]
+    #[Assert\Length(min: 8, minMessage: "Le mot de passe doit contenir au moins 8 caractÃ¨res.")]
+    #[Assert\Regex(
+        pattern: "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/",
+        message: "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractÃ¨re spÃ©cial."
+        )]
     #[Ignore] 
     private ?string $plainPassword = null;
       
@@ -47,7 +50,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $credit = 20;
 
     #[ORM\Column]
-    private ?bool $RGPD = null;
+    private ?bool $RGPD = true;  
+    //null;
 
     // #[ORM\Column(type: 'string', length: 20, nullable: true)]
     // private ?string $userType = null; // Passager, Chauffeur, Chauffeur-Passager
@@ -165,11 +169,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials(): void
     {
-        // Si des données sensibles sont stockées temporairement, les effacer ici.
+        // Si des donnÃ©es sensibles sont stockÃ©es temporairement, les effacer ici.
     }
 
     /**
-     * Retourne l'identifiant unique de l'utilisateur (généralement l'email)
+     * Retourne l'identifiant unique de l'utilisateur (gÃ©nÃ©ralement l'email)
      */
     public function getUserIdentifier(): string
     {
@@ -249,6 +253,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isSuspended = false;
 
+    public function isSuspended(): bool
+    {
+        return $this->isSuspended;
+    }
+
+    public function setIsSuspended(bool $isSuspended): self
+    {
+        $this->isSuspended = $isSuspended;
+        return $this;
+    }
   
 }

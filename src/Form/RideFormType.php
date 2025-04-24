@@ -49,6 +49,7 @@ class RideFormType extends AbstractType
             ])
             ->add('departureTime', TimeType::class, [
                 'label' => 'Heure de départ',
+                
                 'widget' => 'single_text',
                 'constraints' => [new NotBlank()],
                
@@ -62,6 +63,7 @@ class RideFormType extends AbstractType
           
             ->add('duration', TextType::class, [
                 'label' => 'Durée (HH:mm)',
+                
                 'attr' => ['placeholder' => 'ex: 02:30'],
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez saisir une durée.']),

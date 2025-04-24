@@ -10,6 +10,9 @@ use \App\Entity\Employe;
 use App\Repository\RideRepository;
 use App\Repository\BookingRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\RideRepository;
+use App\Repository\BookingRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -55,6 +58,29 @@ class DashboardController extends AbstractDashboardController
             'ridesbyday' => $ridesByDay,
             'bookingsbyday' => $bookingsByDay,
         ]);
+        {
+           
+        $ridesData  = $this->rideRepository->countRidesByDay();
+        return $this->render('admin/dashboard.html.twig', [
+        'ridesdata' => $ridesData,
+      
+    ]);
+   
+    }
+
+    #[Route('/admin/statistics', name: 'admin_statistics')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function statistics(RideRepository $rideRepository, BookingRepository $bookingRepository): Response
+    {
+        // Tu peux ici récupérer les données nécessaires pour les statistiques
+        $ridesByDay = $rideRepository->countRidesByDay(); // Méthode personnalisée pour récupérer les trajets par jour
+        $bookingsByDay = $bookingRepository->countBookingsByDay(); // Méthode personnalisée pour récupérer les réservations par jour
+
+        // Passer les données au template des statistiques
+        return $this->render('admin/statistics.html.twig', [
+            'ridesbyday' => $ridesByDay,
+            'bookingsbyday' => $bookingsByDay,
+        ]);
     }
 
     public function configureDashboard(): Dashboard
@@ -69,8 +95,11 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Utilisateur', 'fa-solid fa-dollar-sign', User::class);
         yield MenuItem::linkToCrud('Employe', 'fas fa-clock', Employe::class);
         yield MenuItem::linkToRoute('Statistiques', 'fa fa-chart-bar', 'admin_statistics');
+        yield MenuItem::linkToRoute('Statistiques', 'fa fa-chart-bar', 'admin_statistics');
         yield MenuItem::linkToLogout('DÃ©connexion', 'fa-solid fa-person-walking-arrow-right');
     }
+    
+    
     
     
 }

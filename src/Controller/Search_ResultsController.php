@@ -15,9 +15,6 @@ use Symfony\Component\VarDumper\VarDumper;
 use App\Repository\BookingRepository;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Repository\Search_ResultsRepository;
-
-
-
 class Search_ResultsController extends AbstractController
 {
     #[Route('/search_results', name: 'search_results', methods: ['GET'])]

@@ -9,6 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository
+ * @extends ServiceEntityRepository
  */
 class RideRepository extends ServiceEntityRepository
 {
@@ -116,5 +117,8 @@ class RideRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult() ?: [];
     }
+
+ 
+
 
 }

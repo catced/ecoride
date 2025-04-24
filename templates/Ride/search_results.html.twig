@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="mb-2 row">
-                    <label for="price" class="col-md-4 col-form-label">Prix max (€) :</label>
+                    <label for="price" class="col-md-4 col-form-label">Prix max (â¬) :</label>
                     <div class="col-md-8">
                         <input type="number" id="price" name="price" value="{{ app.request.query.get('price') }}" min="0" step="1" class="form-control form-control-sm w-100">
                     </div>
@@ -55,7 +55,7 @@
 
                 <div class="mb-2 form-check">
                     <input type="checkbox" id="ecologique" name="ecologique" class="form-check-input" {% if app.request.query.get('ecologique') %} checked{% endif %}>
-                    <label class="form-check-label" for="ecologique">Écologique (véhicules électriques uniquement)</label>
+                    <label class="form-check-label" for="ecologique">Ecologique (véhicules électriques uniquement)</label>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-sm w-100 mt-2">Filtrer</button>
@@ -63,7 +63,7 @@
         </div>
 
         {# <div class="mt-3">
-            <a href="{{ path('app_mes_voyages') }}" class="btn btn-secondary btn-sm w-100">Mes réservations (Cliquez sur le bouton)</a>
+            <a href="{{ path('app_mes_voyages') }}" class="btn btn-secondary btn-sm w-100">Mes rÃ©servations (Cliquez sur le bouton)</a>
         </div> #}
 
         <h2 class="text-center mt-4">Trajets disponibles</h2>

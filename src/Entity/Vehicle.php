@@ -37,35 +37,12 @@ class Vehicle
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $preferences = [];
 
-    // #[ORM\ManyToOne(targetEntity: User::class)]
-    // #[ORM\JoinColumn(nullable: false)]
-    // private $owner;
-    // #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'vehicles')]
-    // #[ORM\JoinColumn(nullable: false)]
-    // private ?User $owner = null;
-
-    // #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "vehicles")]
-    // #[ORM\JoinColumn(nullable: false)]
-    // private User $user;
-
-    // #[ORM\ManyToOne(targetEntity: User::class)] // Relation vers User SANS mappedBy
-    // #[ORM\JoinColumn(name: 'owner_id', referencedColumnName: 'id', nullable: false)]
-    // private User $owner;
     #[ORM\ManyToOne(targetEntity: User::class)]
-#[ORM\JoinColumn(nullable: false)]
-private User $owner;
-
+    #[ORM\JoinColumn(nullable: false)]
+    private User $owner;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateFirstUse = null;
-
-  
-
-    // /**
-    //  * @var Collection<int, User>
-    //  */
-    // #[ORM\ManyToOne(targetEntity: User::class, mappedBy: 'vehicle')]
-    // private Collection $user;
 
     public function __construct()
     {
@@ -111,40 +88,4 @@ private User $owner;
 
         return $this;
     }
-
-    // /**
-    //  * @return Collection<int, User>
-    //  */
-    // public function getOwner(): Collection
-    // {
-    //     return $this->owner;
-    // }
-
-    // public function addUser(User $user): static
-    // {
-    //     if (!$this->user->contains($user)) {
-    //         $this->user->add($user);
-    //         $user->setVehicle($this);
-    //     }
-
-    //     return $this;
-    // }
-
-    // public function removeUser(User $user): static
-    // {
-    //     if ($this->user->removeElement($user)) {
-    //         // set the owning side to null (unless already changed)
-    //         if ($user->getVehicle() === $this) {
-    //             $user->setVehicle(null);
-    //         }
-    //     }
-
-    //     return $this;
-    // }
-
-
-   
-
-   
-
 }

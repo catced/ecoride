@@ -43,10 +43,23 @@ class WinCreditRepository extends ServiceEntityRepository
     //    }
     public function getTotalCredits(): int
     {
-        return (int) $this->createQueryBuilder('w')
-            ->select('SUM(w.Monday + w.Tuesday + w.Wednesday + w.Thursday + w.Friday + w.Saturday + w.Sunday) as total')
-            ->getQuery()
-            ->getSingleScalarResult();
+        $result = $this->createQueryBuilder('w')
+        ->select(
+            'SUM(w.Monday) as Monday',
+            'SUM(w.Tuesday) as Tuesday',
+            'SUM(w.Wednesday) as Wednesday',
+            'SUM(w.Thursday) as Thursday',
+            'SUM(w.Friday) as Friday',
+            'SUM(w.Saturday) as Saturday',
+            'SUM(w.Sunday) as Sunday'
+        )
+        ->getQuery()
+        ->getSingleResult();
+        return array_sum($result); 
+        // return (int) $this->createQueryBuilder('w')
+        //     ->select('SUM(w.Monday + w.Tuesday + w.Wednesday + w.Thursday + w.Friday + w.Saturday + w.Sunday) as total')
+        //     ->getQuery()
+        //     ->getSingleScalarResult();
     }
 
     public function getCreditsByDay(): array

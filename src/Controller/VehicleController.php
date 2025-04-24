@@ -27,17 +27,6 @@ public function ajouterVehicule(Request $request, EntityManagerInterface $entity
 
     if ($form->isSubmitted() && $form->isValid()) {
 
-        // $preferences = $form->get('preferences')->getData();
-            
-        // // Récupérer les préférences personnalisées
-        // $customPreferences = $form->get('customPreferences')->getData();
-
-        // // Fusionner les préférences en supprimant les champs vides
-        // $allPreferences = array_merge($preferences, array_filter($customPreferences));
-
-        // // Enregistrer dans l'entité Vehicle
-        // $vehicle->setPreferences($allPreferences);
-        
         $entityManager->persist($vehicle);
         $entityManager->flush();
 

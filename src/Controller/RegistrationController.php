@@ -48,18 +48,6 @@ class RegistrationController extends AbstractController
                 $user->setCredit(20);
             }
 
-            // if ($user->getUserType() === 'C' || $user->getUserType() === 'CP') {
-            //     // $vehiclesData = $form->get('vehicles')->getData();
-            //     // foreach ($vehiclesData as $vehicle) {
-            //     //     $user->addVehicle($vehicle); // Associe le véhicule à l'utilisateur
-            //     // }
-            //     foreach ($user->getVehicles() as $vehicle) {
-            //         $vehicle->setOwner($user); // Associe chaque véhicule au User
-            //         $entityManager->persist($vehicle);
-            //     }
-            
-            // }
-
             // Sauvegarde en base de données
             $entityManager->persist($user);
             $entityManager->flush();
@@ -69,9 +57,7 @@ class RegistrationController extends AbstractController
 
             return $this->redirectToRoute('app_login');
         }
-
-
-       
+      
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);

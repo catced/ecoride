@@ -15,6 +15,18 @@ class EmployeFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
+      $user = new User();
+      $user -> setId("1");
+      $user -> setPseudo("catced");
+      $user -> setName("catced");
+      $user -> setrgpd("1");
+      $user -> setissuspended("0");
+      $user -> setCredit("20");
+      $user -> setPassword("$2y$13.$qHbtaG02lEeBKZRTphLPZuDOUL0wr9oO4ukqLMnHnvtmA9VOJKYiy");
+      $user -> setRoles(["ROLE_USER"]);
+      $user -> setEmail("catced@gmail.com");
+      $manager->persist($user);
+
       $employe = new Employe();
       $employe -> setPseudo("catced");
       $employe -> setPassword("$2y$13$10FmtRROnaNUT6ZeYoTA3OlSsfpcTEXBGmBmDJXBHd2ZDI937dq7e");
@@ -28,16 +40,6 @@ class EmployeFixtures extends Fixture
       $employe -> setRoles(["ROLE_EMPLOYE"]);
       $employe -> setEmail("employe@gmail.com");
       $manager->persist($employe);
-
-      $user = new User();
-      $user -> setId("1");
-      $user -> setPseudo("catced");
-      $user -> setPseudo("catced");
-      $user -> setCredit("20");
-      $user -> setPassword("$2y$13.$qHbtaG02lEeBKZRTphLPZuDOUL0wr9oO4ukqLMnHnvtmA9VOJKYiy");
-      $user -> setRoles(["ROLE_USER"]);
-      $user -> setEmail("catced@gmail.com");
-      $manager->persist($user);
 
       $user = new User();
       $user -> setId("2");
@@ -164,23 +166,7 @@ class EmployeFixtures extends Fixture
 
       $manager->persist($ride);
 
-      $ride = new Ride();
-      $ride -> setVehicleId("5");
-      $ride -> setDriverId("2");
-      $ride -> setDeparture("Nantes");
-      $ride -> setDestination("Orleans");
-      $ride -> setDepartureDay("2025-10-01");
-      $ride -> setDepartureTime("10:00");
-      $ride -> setPrice("20");
-      $ride -> setDuration("03:40");
-      $ride -> setStatus("pending");
-      $ride -> setAvailableSeats("4");
-
-      $manager->persist($ride);
-
-     
-
-     $manager->flush();
+      $manager->flush();
     }
 
 }

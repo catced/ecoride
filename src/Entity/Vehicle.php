@@ -51,6 +51,11 @@ class Vehicle
     }
 
     public function getId(): ?int { return $this->id; }
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
     public function getBrand(): ?string { return $this->brand; }
     public function setBrand(string $brand): self { $this->brand = $brand; return $this; }
     public function getModel(): ?string { return $this->model; }

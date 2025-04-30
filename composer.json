@@ -83,9 +83,10 @@
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
-            "importmap:install": "symfony-cmd"
+            "importmap:install": "symfony-cmd",
+             "symfony-cmd": "@echo 'symfony-cmd skipped'"
         },
-      
+              
         "post-install-cmd": [
             "@auto-scripts"
         ],

@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
-class LoginRedirectListener
+class LoginRedirectListener1
 {
     private $router;
 

@@ -9,6 +9,8 @@ use App\Entity\User;
 use App\Entity\Vehicle;
 use App\Entity\WinCredit;
 use App\Entity\Ride;
+use App\Entity\Booking;
+use App\Entity\Review;
 
 class EmployeFixtures extends Fixture
 {
@@ -16,10 +18,10 @@ class EmployeFixtures extends Fixture
     {
         // Employés
         $employe = new Employe();
-        $employe->setPseudo("catced");
+        $employe->setPseudo("jose");
         $employe->setPassword("$2y$13$10FmtRROnaNUT6ZeYoTA3OlSsfpcTEXBGmBmDJXBHd2ZDI937dq7e");
         $employe->setRoles(["ROLE_ADMIN"]);
-        $employe->setEmail("catced@gmail.com");
+        $employe->setEmail("jose@gmail.com");
         $manager->persist($employe);
 
         $employe = new Employe();
@@ -142,6 +144,7 @@ class EmployeFixtures extends Fixture
         $ride->setStatus("pending");
         $ride->setAvailableSeats("4");
         $manager->persist($ride);
+        $this->addReference('Ride1', $ride);
 
         $ride = new Ride();
         $ride->setVehicle($this->getReference('Vehicle_Paul1', Vehicle::class));
@@ -155,6 +158,7 @@ class EmployeFixtures extends Fixture
         $ride->setStatus("pending");
         $ride->setAvailableSeats("4");
         $manager->persist($ride);
+        $this->addReference('Ride2', $ride);
 
         $ride = new Ride();
         $ride->setVehicle($this->getReference('Vehicle_Pierre', Vehicle::class));
@@ -168,6 +172,7 @@ class EmployeFixtures extends Fixture
         $ride->setStatus("pending");
         $ride->setAvailableSeats("4");
         $manager->persist($ride);
+        $this->addReference('Ride3', $ride);
 
         $ride = new Ride();
         $ride->setVehicle($this->getReference('Vehicle_Pierre1', Vehicle::class));
@@ -181,7 +186,75 @@ class EmployeFixtures extends Fixture
         $ride->setStatus("pending");
         $ride->setAvailableSeats("4");
         $manager->persist($ride);
+        $this->addReference('Ride4', $ride);
 
         $manager->flush();
+
+        $booking = new Booking();
+        $booking->setCreatedAt(new \DateTime('2025-06-15'));
+        $booking->setSeatsBooked(1);
+        $booking->setUser($this->getReference('Pierre', User::class));
+        $booking->setRide($this->getReference('Ride1', Ride::class));
+        $manager->persist($booking);
+
+        $booking = new Booking();
+        $booking->setCreatedAt(new \DateTime('2025-06-15'));
+        $booking->setSeatsBooked(1);
+        $booking->setUser($this->getReference('roro', User::class));
+        $booking->setRide($this->getReference('Ride1', Ride::class));
+        $manager->persist($booking);
+
+        $booking = new Booking();
+        $booking->setCreatedAt(new \DateTime('2025-05-10'));
+        $booking->setSeatsBooked(1);
+        $booking->setUser($this->getReference('roro', User::class));
+        $booking->setRide($this->getReference('Ride2', Ride::class));
+        $manager->persist($booking);
+
+        $booking = new Booking();
+        $booking->setCreatedAt(new \DateTime('2025-04-10'));
+        $booking->setSeatsBooked(1);
+        $booking->setUser($this->getReference('Paul', User::class));
+        $booking->setRide($this->getReference('Ride3', Ride::class));
+        $manager->persist($booking);
+
+        $booking = new Booking();
+        $booking->setCreatedAt(new \DateTime('2025-03-01'));
+        $booking->setSeatsBooked(1);
+        $booking->setUser($this->getReference('Paul', User::class));
+        $booking->setRide($this->getReference('Ride3', Ride::class));
+        $manager->persist($booking);
+
+        $manager->flush();
+
+        $review = new Review();
+        $review->setComment("Chauffeur au top. Eau offerte");
+        $review->setRating(4);
+        $review->setValidated(false);
+        $review->setPassenger($this->getReference('roro', User::class));
+        $review->setRide($this->getReference('Ride2', Ride::class));
+        $manager->persist($review);
+        $manager->flush();
+
+        $review = new Review();
+        $review->setComment("Pas de musique. La voiture est sale et les sièges déchirés !!!!");
+        $review->setRating(1);
+        $review->setValidated(false);
+        $review->setPassenger($this->getReference('roro', User::class));
+        $review->setRide($this->getReference('Ride1', Ride::class));
+        $manager->persist($review);
+        $manager->flush();
+
+        $review = new Review();
+        $review->setComment("");
+        $review->setRating(4);
+        $review->setValidated(false);
+        $review->setPassenger($this->getReference('Pierre', User::class));
+        $review->setRide($this->getReference('Ride3', Ride::class));
+        $manager->persist($review);
+        $manager->flush();
+
+       
+
     }
 }

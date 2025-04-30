@@ -40,6 +40,11 @@ class Booking
     public function getRide(): ?Ride { return $this->ride; }
     public function setRide(?Ride $ride): self { $this->ride = $ride; return $this; }
     public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
+    public function setCreatedAt(\DateTimeInterface $createdAt): self {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
     public function getSeatsBooked(): ?int { return $this->seatsBooked; }
     public function setSeatsBooked(int $seatsBooked): static { $this->seatsBooked = $seatsBooked; return $this; }
 }

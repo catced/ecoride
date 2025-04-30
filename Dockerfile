@@ -25,4 +25,7 @@ RUN sed -i 's!/var/www/html!/var/www/html/public!' /etc/apache2/sites-available/
 # Définir les permissions (optionnel, mais utile)
 RUN chown -R www-data:www-data /var/www/html
 
+RUN curl -sS https://get.symfony.com/cli/installer | bash && \
+    mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
+
 EXPOSE 80

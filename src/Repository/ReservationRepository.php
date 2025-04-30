@@ -2,19 +2,19 @@
 
 namespace App\Repository;
 
-use App\Entity\registration;
+use App\Entity\Registration;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Toto>
  */
-class registrationRepository extends ServiceEntityRepository
+class RegistrationRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, registration::class);
-    }
+    // public function __construct(ManagerRegistry $registry)
+    //  {
+    //     parent::__construct($registry, Registration::class);
+    //  }
 
     //    /**
     //     * @return Toto[] Returns an array of Toto objects

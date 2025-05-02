@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y unzip git \
 
 # Installer les dépendances PHP
 #RUN composer install --no-scripts --no-dev --optimize-autoloader
+ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-dev --optimize-autoloader
 
 # Copier le reste du code après l'installation

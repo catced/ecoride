@@ -2,7 +2,7 @@ FROM php:8.2-apache
 
 # Installer les extensions PHP nécessaires
 RUN apt-get update && apt-get install -y \
-    git unzip zip libicu-dev libpq-dev libzip-dev \
+    git unzip zip libicu-dev libpq-dev libzip-dev curl \
     && docker-php-ext-install intl pdo pdo_pgsql zip opcache
 
 # Activer mod_rewrite pour Apache
@@ -14,14 +14,20 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Définir le dossier de travail
 WORKDIR /var/www/html
 
-# Copier le projet complet (incluant .env)
+# Copier les fichiers de l'application
 COPY . .
 
-# Permettre l?exécution des scripts même en root
+# Autoriser l'exécution de scripts Composer en tant que root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Installer les dépendances PHP (avec scripts Symfony)
+# Vérifie qu?un fichier .env existe
+RUN test -f .env || cp .env.dist .env
+
+# Installer les dépendances PHP (sans scripts pour éviter erreur Dotenv)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# (Optionnel) Lancer les scripts après avoir copié le .env
+RUN composer run-script @auto-scripts || true
 
 # Fixer le document root Apache sur /public
 RUN sed -i 's!/var/www/html!/var/www/html/public!' /etc/apache2/sites-available/000-default.conf

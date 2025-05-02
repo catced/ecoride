@@ -20,9 +20,6 @@ COPY . .
 # Autoriser l'exécution de scripts Composer en tant que root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Vérifie qu?un fichier .env existe
-RUN test -f .env || cp .env.dist .env
-
 # Installer les dépendances PHP (sans scripts pour éviter erreur Dotenv)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 

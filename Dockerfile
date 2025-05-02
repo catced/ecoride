@@ -21,7 +21,7 @@ COPY . .
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Installer les dépendances PHP (avec scripts Symfony)
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --scripts
 
 # Fixer le document root Apache sur /public
 RUN sed -i 's!/var/www/html!/var/www/html/public!' /etc/apache2/sites-available/000-default.conf

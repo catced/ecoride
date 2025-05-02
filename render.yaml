@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: ecoride
+    env: php
+    buildCommand: "composer install --no-dev --optimize-autoloader"
+    startCommand: "" # Laisse vide si tu utilises Apache (Render le détecte)
+    plan: free

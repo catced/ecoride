@@ -15,8 +15,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY composer.json composer.lock ./
 
+COPY . /var/www/html
+WORKDIR /var/www/html
+RUN apt-get update && apt-get install -y unzip git \
+    && curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer
+
 # Installer les dépendances PHP
-RUN composer install --no-scripts --no-dev --optimize-autoloader
+#RUN composer install --no-scripts --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader
 
 # Copier le reste du code après l'installation
 COPY . .
